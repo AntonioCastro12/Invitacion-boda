@@ -9,7 +9,7 @@ Invitación digital VIP construida con Next.js y preparada para Netlify. Incluye
 
 ## Desarrollo local
 
-Para revisar la interfaz sin conectar los servicios de Netlify:
+Para revisar la interfaz:
 
 ```bash
 npm install
@@ -18,7 +18,7 @@ npm run dev
 
 La aplicación estará disponible en `http://localhost:3000`. Cuando no existen variables administrativas en desarrollo, `/admin` permite acceso local automático.
 
-Para probar también Netlify Database y Netlify Blobs:
+Para probar también el almacenamiento persistente de Netlify Blobs:
 
 ```bash
 npx netlify-cli login
@@ -32,7 +32,7 @@ Netlify Dev abre normalmente `http://localhost:8888` y replica el entorno de pro
 
 1. Sube este repositorio a GitHub.
 2. En Netlify selecciona **Add new site > Import an existing project**.
-3. Elige el repositorio. Netlify detectará Next.js y usará `npm run build` desde `netlify.toml`.
+3. Elige el repositorio. `netlify.toml` fija la compilación en `npm run build` y la publicación en `.next`.
 4. En **Site configuration > Environment variables**, agrega:
 
    - `ADMIN_PASSWORD`: contraseña privada para `/admin`.
@@ -44,14 +44,19 @@ Netlify Dev abre normalmente `http://localhost:8888` y replica el entorno de pro
    node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
    ```
 
-5. Publica el sitio. Netlify Database aplicará la migración de `netlify/database/migrations` y creará el invitado de demostración.
+5. Publica el sitio. Netlify Blobs se aprovisiona automáticamente y no requiere habilitar Netlify Database.
 
 No hace falta configurar redirects manuales: el adaptador oficial de Next.js de Netlify procesa `/i/[token]`, `/admin` y las rutas `/api/*`.
 
 ## Datos y archivos
 
-- Netlify Database (PostgreSQL): invitados, confirmaciones, accesos y metadatos del álbum.
-- Netlify Blobs: archivos de las fotografías del álbum.
+Netlify Blobs guarda invitados, confirmaciones, accesos, metadatos y fotografías en dos almacenes:
+
+- `wedding-data`: registros estructurados de la invitación.
+- `wedding-album`: archivos de las fotografías.
+
+Rutas importantes:
+
 - Invitación de demostración: `/i/familia-castro-cuevas`.
 - Panel: `/admin`.
 

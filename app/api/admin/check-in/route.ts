@@ -1,7 +1,5 @@
 import { getAdminAccess } from "../../../admin/admin-auth";
-import { getWeddingDatabase } from "../../../../db/runtime";
-
-type GuestRow = { id: string; token: string; name: string; max_passes: number };
+import { createCheckIn, getCheckIn, getGuest } from "../../../../db/runtime";
 
 function extractToken(value: string) {
   const trimmed = value.trim();
@@ -22,30 +20,26 @@ export async function POST(request: Request) {
     const token = extractToken(payload.token ?? "");
     if (!token) return Response.json({ error: "Escanea o escribe un código válido." }, { status: 400 });
 
-    const { sql } = getWeddingDatabase();
-    const guestRows = await sql<GuestRow>`
-      SELECT id, token, name, max_passes FROM guests WHERE token = ${token} LIMIT 1`;
-    const guest = guestRows[0];
+    const guest = await getGuest(token);
     if (!guest) return Response.json({ error: "El código no pertenece a una invitación válida." }, { status: 404 });
 
-    const inserted = await sql<{ checked_in_at: string }>`
-      INSERT INTO check_ins (guest_id, scanned_by)
-      VALUES (${guest.id}, ${access.user.email})
-      ON CONFLICT (guest_id) DO NOTHING
-      RETURNING checked_in_at`;
+    const checkIn = {
+      scanned_by: access.user.email,
+      checked_in_at: new Date().toISOString(),
+    };
+    const created = await createCheckIn(token, checkIn);
 
-    if (inserted.length === 0) {
-      const previous = await sql<{ checked_in_at: string }>`
-        SELECT checked_in_at FROM check_ins WHERE guest_id = ${guest.id} LIMIT 1`;
+    if (!created) {
+      const previous = await getCheckIn(token);
       return Response.json({
         error: "Este pase ya fue registrado.",
         duplicate: true,
         guest,
-        checkedInAt: previous[0]?.checked_in_at,
+        checkedInAt: previous?.checked_in_at,
       }, { status: 409 });
     }
 
-    return Response.json({ ok: true, guest, checkedInAt: inserted[0].checked_in_at });
+    return Response.json({ ok: true, guest, checkedInAt: checkIn.checked_in_at });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "No fue posible validar el acceso." }, { status: 500 });
   }

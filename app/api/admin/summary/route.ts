@@ -1,30 +1,22 @@
 import { getAdminAccess } from "../../../admin/admin-auth";
-import { getWeddingDatabase } from "../../../../db/runtime";
-
-type GuestSummary = {
-  id: string;
-  token: string;
-  name: string;
-  max_passes: number;
-  attending: boolean | null;
-  guests_count: number | null;
-  checked_in_at: string | null;
-  created_at: string;
-};
+import { getCheckIn, getRsvp, listGuests } from "../../../../db/runtime";
 
 export async function GET() {
   const access = await getAdminAccess();
   if (!access.user) return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
 
   try {
-    const { sql } = getWeddingDatabase();
-    const guests = await sql<GuestSummary>`SELECT
-      g.id, g.token, g.name, g.max_passes, g.created_at,
-      r.attending, r.guests_count, c.checked_in_at
-      FROM guests g
-      LEFT JOIN rsvps r ON r.guest_id = g.id
-      LEFT JOIN check_ins c ON c.guest_id = g.id
-      ORDER BY g.created_at DESC, g.id DESC`;
+    const records = await listGuests();
+    const guests = await Promise.all(records.map(async (guest) => {
+      const [rsvp, checkIn] = await Promise.all([getRsvp(guest.token), getCheckIn(guest.token)]);
+      return {
+        ...guest,
+        attending: rsvp?.attending ?? null,
+        guests_count: rsvp?.guests_count ?? null,
+        checked_in_at: checkIn?.checked_in_at ?? null,
+      };
+    }));
+
     const stats = guests.reduce((totals, guest) => ({
       invitations: totals.invitations + 1,
       invited: totals.invited + guest.max_passes,

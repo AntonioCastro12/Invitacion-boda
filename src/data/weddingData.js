@@ -1,7 +1,7 @@
 export const weddingData = {
   couple: {
-    bride: "Dulce",
-    groom: "Eduardo",
+    bride: "Susana",
+    groom: "Gerardo",
   },
   date: "2026-10-10T17:00:00-06:00",
   dateDisplay: "10 · 10 · 2026",

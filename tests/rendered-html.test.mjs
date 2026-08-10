@@ -29,10 +29,9 @@ test("keeps the final metadata and responsive invitation", async () => {
 });
 
 test("is configured as a native Next.js application for Netlify", async () => {
-  const [packageText, netlify, migration, runtime, adminSession] = await Promise.all([
+  const [packageText, netlify, runtime, adminSession] = await Promise.all([
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../netlify.toml", import.meta.url), "utf8"),
-    readFile(new URL("../netlify/database/migrations/202608100001_wedding_vip.sql", import.meta.url), "utf8"),
     readFile(new URL("../db/runtime.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/admin/admin-session.ts", import.meta.url), "utf8"),
   ]);
@@ -41,16 +40,15 @@ test("is configured as a native Next.js application for Netlify", async () => {
   assert.equal(packageJson.scripts.dev, "next dev");
   assert.equal(packageJson.scripts.build, "next build");
   assert.ok(packageJson.dependencies.next);
-  assert.ok(packageJson.dependencies["@netlify/database"]);
   assert.ok(packageJson.dependencies["@netlify/blobs"]);
+  assert.equal(packageJson.dependencies["@netlify/database"], undefined);
   assert.equal(packageJson.devDependencies.vinext, undefined);
   assert.equal(packageJson.devDependencies.wrangler, undefined);
   assert.match(netlify, /command = "npm run build"/);
-  assert.match(migration, /CREATE TABLE IF NOT EXISTS guests/);
-  assert.match(migration, /CREATE TABLE IF NOT EXISTS album_photos/);
-  assert.match(migration, /ON CONFLICT \(token\) DO NOTHING/);
-  assert.match(runtime, /@netlify\/database/);
+  assert.match(netlify, /publish = "\.next"/);
   assert.match(runtime, /@netlify\/blobs/);
+  assert.match(runtime, /wedding-data/);
+  assert.match(runtime, /consistency: "strong"/);
   assert.doesNotMatch(runtime, /cloudflare:workers|D1Database|R2Bucket/);
   assert.match(adminSession, /ADMIN_SESSION_SECRET/);
   assert.match(adminSession, /httpOnly: true/);
@@ -73,5 +71,5 @@ test("keeps all VIP management modules connected", async () => {
   assert.match(album, /fetch\("\/api\/album"/);
   assert.match(admin, /Control de acceso/);
   assert.match(admin, /Nueva invitación/);
-  assert.match(invitationRoute, /getWeddingDatabase/);
+  assert.match(invitationRoute, /getGuest/);
 });

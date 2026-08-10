@@ -1,5 +1,5 @@
 import { getAdminAccess } from "../../../admin/admin-auth";
-import { getWeddingDatabase } from "../../../../db/runtime";
+import { removeGuest, saveGuest, type WeddingGuest } from "../../../../db/runtime";
 
 function slugify(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -16,14 +16,15 @@ export async function POST(request: Request) {
     const passes = Math.min(Math.max(Number(payload.passes) || 1, 1), 20);
     if (!name) return Response.json({ error: "Escribe el nombre del invitado o familia." }, { status: 400 });
 
-    const token = `${slugify(name) || "invitado"}-${crypto.randomUUID().slice(0, 8)}`;
-    const { sql } = getWeddingDatabase();
-    const rows = await sql<{ id: string; token: string; name: string; max_passes: number }>`
-      INSERT INTO guests (token, name, max_passes)
-      VALUES (${token}, ${name}, ${passes})
-      RETURNING id, token, name, max_passes`;
-
-    return Response.json({ guest: rows[0] }, { status: 201 });
+    const guest: WeddingGuest = {
+      id: crypto.randomUUID(),
+      token: `${slugify(name) || "invitado"}-${crypto.randomUUID().slice(0, 8)}`,
+      name,
+      max_passes: passes,
+      created_at: new Date().toISOString(),
+    };
+    await saveGuest(guest);
+    return Response.json({ guest }, { status: 201 });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "No fue posible crear la invitación." }, { status: 500 });
   }
@@ -39,8 +40,7 @@ export async function DELETE(request: Request) {
     if (!token || token === "familia-castro-cuevas") {
       return Response.json({ error: "Esta invitación de demostración no se puede eliminar." }, { status: 400 });
     }
-    const { sql } = getWeddingDatabase();
-    await sql`DELETE FROM guests WHERE token = ${token}`;
+    await removeGuest(token);
     return Response.json({ ok: true });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "No fue posible eliminar la invitación." }, { status: 500 });
