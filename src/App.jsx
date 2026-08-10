@@ -42,14 +42,10 @@ export default function WeddingApp() {
   }, []);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("invitation-locked", !opened);
-    document.body.classList.toggle("invitation-locked", !opened);
-    if (!opened) window.scrollTo({ top: 0, behavior: "auto" });
-
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = opened ? previousOverflow : "hidden";
     return () => {
-      root.classList.remove("invitation-locked");
-      document.body.classList.remove("invitation-locked");
+      document.body.style.overflow = previousOverflow;
     };
   }, [opened]);
 

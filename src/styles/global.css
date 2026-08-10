@@ -24,20 +24,6 @@ html {
   text-size-adjust: 100%;
 }
 
-html.invitation-locked,
-html.invitation-locked body,
-body.invitation-locked {
-  width: 100%;
-  height: 100%;
-  overflow: hidden !important;
-  overscroll-behavior: none;
-}
-
-body.invitation-locked {
-  position: fixed;
-  inset: 0;
-}
-
 body {
   width: 100%;
   min-width: 0;
@@ -102,7 +88,6 @@ video {
   width: 100%;
   min-width: 0;
   transform-origin: 50% 42%;
-  overflow-x: clip;
 }
 
 .section-reveal::after {
@@ -578,8 +563,6 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  overscroll-behavior: none;
-  touch-action: manipulation;
   border: 1px solid rgba(181, 150, 90, 0.34);
   background:
     linear-gradient(rgba(255, 253, 248, 0.93), rgba(255, 253, 248, 0.98)),

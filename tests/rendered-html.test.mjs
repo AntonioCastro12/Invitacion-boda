@@ -71,7 +71,6 @@ test("keeps all VIP capabilities as animated interactive demonstrations", async 
   assert.match(app, /<SectionReveal direction="zoom">/);
   assert.match(reveal, /useReducedMotion/);
   assert.match(reveal, /whileInView/);
-  assert.match(app, /invitation-locked/);
   assert.match(video, /IntersectionObserver/);
   assert.match(video, /autoPlay=\{!reduceMotion\}/);
   assert.match(video, /muted/);
