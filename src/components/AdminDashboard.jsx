@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, ClipboardCheck, Copy, ExternalLink, Heart, Link2, LoaderCircle, Plus, RefreshCw, ShieldCheck, TicketCheck, Trash2, UserCheck, Users } from "lucide-react";
+import { CheckCircle2, ClipboardCheck, Copy, ExternalLink, Heart, Link2, LoaderCircle, LogOut, Plus, RefreshCw, ShieldCheck, TicketCheck, Trash2, UserCheck, Users } from "lucide-react";
 
 const emptyStats = { invitations: 0, invited: 0, confirmed: 0, pending: 0, declined: 0, checkIns: 0 };
 
@@ -90,6 +90,11 @@ export default function AdminDashboard({ adminName, initialCheckin = "" }) {
     }
   };
 
+  const logout = async () => {
+    await fetch("/api/admin/logout", { method: "POST" });
+    window.location.assign("/admin/login");
+  };
+
   const statCards = [
     ["Invitaciones", summary.stats.invitations, TicketCheck],
     ["Personas invitadas", summary.stats.invited, Users],
@@ -107,9 +112,14 @@ export default function AdminDashboard({ adminName, initialCheckin = "" }) {
           <h1>Panel de invitados</h1>
           <p>Hola, {adminName}. Aquí puedes crear pases, revisar confirmaciones y validar entradas.</p>
         </div>
+        <div className="admin-header__actions">
         <a className="button button--outline" href="/" target="_blank" rel="noreferrer">
           Ver invitación <ExternalLink size={14} />
         </a>
+          <button className="button button--outline" type="button" onClick={logout}>
+            Salir <LogOut size={14} />
+          </button>
+        </div>
       </header>
 
       {notice.message && <div className={`admin-notice admin-notice--${notice.type}`} role="status">{notice.message}</div>}

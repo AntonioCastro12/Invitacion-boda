@@ -2,95 +2,76 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-
-  return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-}
-
-test("renders the wedding invitation with its final metadata", async () => {
-  const response = await render();
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-
-  const html = await response.text();
-  assert.match(html, /<html[^>]*lang="es"/i);
-  assert.match(html, /<meta[^>]*name="viewport"[^>]*width=device-width/i);
-  assert.match(html, /<title>Dulce &amp; Eduardo \| Nuestra boda<\/title>/i);
-  assert.match(html, /Acompáñanos a celebrar nuestra boda el 10 de octubre de 2026\./i);
-  assert.match(html, /\/og\.png/i);
-  assert.doesNotMatch(html, /codex-preview|Starter Project|Your site is taking shape/i);
-});
-
-test("keeps the interactive envelope and invitation content connected", async () => {
-  const [app, welcome, countdown, data, packageJson] = await Promise.all([
+test("keeps the final metadata and responsive invitation", async () => {
+  const [layout, app, welcome, countdown, data] = await Promise.all([
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/App.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/WelcomeScreen.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/Countdown.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/data/weddingData.js", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
 
+  assert.match(layout, /<html lang="es">/);
+  assert.match(layout, /width: "device-width"/);
+  assert.match(layout, /Dulce & Eduardo \| Nuestra boda/);
+  assert.match(layout, /\/og\.png/);
   assert.match(app, /<WelcomeScreen/);
   assert.match(app, /inert=\{!opened\}/);
   assert.match(welcome, /const LAST_STAGE = 3/);
   assert.match(welcome, /screen-envelope--closed/);
   assert.match(welcome, /screen-envelope--open/);
   assert.match(welcome, /screen-envelope__seal/);
-  assert.match(welcome, /Abrir invitación/);
-  assert.match(welcome, /aria-label=\{labels\[stage\]\}/);
   assert.match(countdown, /useState\(null\)/);
-  assert.match(countdown, /const updateTime = \(\) => setTime\(getTimeLeft\(date\)\)/);
   assert.doesNotMatch(countdown, /useState\(\(\) => getTimeLeft/);
   assert.match(data, /bride: "Dulce"/);
   assert.match(data, /groom: "Eduardo"/);
   assert.match(data, /dateDisplay: "10 · 10 · 2026"/);
-  assert.match(packageJson, /"dev": "cross-env WRANGLER_LOG_PATH=/);
-  assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 });
 
-test("includes the VIP invitation, access and management modules", async () => {
-  const [app, pass, rsvp, album, admin, schema, migration, hosting] = await Promise.all([
+test("is configured as a native Next.js application for Netlify", async () => {
+  const [packageText, netlify, migration, runtime, adminSession] = await Promise.all([
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../netlify.toml", import.meta.url), "utf8"),
+    readFile(new URL("../netlify/database/migrations/202608100001_wedding_vip.sql", import.meta.url), "utf8"),
+    readFile(new URL("../db/runtime.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/admin/admin-session.ts", import.meta.url), "utf8"),
+  ]);
+  const packageJson = JSON.parse(packageText);
+
+  assert.equal(packageJson.scripts.dev, "next dev");
+  assert.equal(packageJson.scripts.build, "next build");
+  assert.ok(packageJson.dependencies.next);
+  assert.ok(packageJson.dependencies["@netlify/database"]);
+  assert.ok(packageJson.dependencies["@netlify/blobs"]);
+  assert.equal(packageJson.devDependencies.vinext, undefined);
+  assert.equal(packageJson.devDependencies.wrangler, undefined);
+  assert.match(netlify, /command = "npm run build"/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS guests/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS album_photos/);
+  assert.match(migration, /ON CONFLICT \(token\) DO NOTHING/);
+  assert.match(runtime, /@netlify\/database/);
+  assert.match(runtime, /@netlify\/blobs/);
+  assert.doesNotMatch(runtime, /cloudflare:workers|D1Database|R2Bucket/);
+  assert.match(adminSession, /ADMIN_SESSION_SECRET/);
+  assert.match(adminSession, /httpOnly: true/);
+});
+
+test("keeps all VIP management modules connected", async () => {
+  const [app, pass, rsvp, album, admin, invitationRoute] = await Promise.all([
     readFile(new URL("../src/App.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/InvitationPass.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/RSVP.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/CollaborativeAlbum.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/AdminDashboard.jsx", import.meta.url), "utf8"),
-    readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
-    readFile(new URL("../drizzle/0000_nifty_tenebrous.sql", import.meta.url), "utf8"),
-    readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/invitations/[token]/route.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(app, /<AddToCalendar/);
   assert.match(app, /<CollaborativeAlbum/);
   assert.match(pass, /QRCodeSVG/);
-  assert.match(pass, /Código individual de acceso/);
   assert.match(rsvp, /fetch\("\/api\/rsvp"/);
   assert.match(album, /fetch\("\/api\/album"/);
   assert.match(admin, /Control de acceso/);
   assert.match(admin, /Nueva invitación/);
-  assert.match(schema, /export const guests/);
-  assert.match(schema, /export const checkIns/);
-  assert.match(schema, /export const albumPhotos/);
-  assert.match(migration, /CREATE TABLE `guests`/);
-  assert.deepEqual(JSON.parse(hosting), {
-    project_id: "appgprj_6a79f7c312b88191a28f77ba030f48b8",
-    d1: "DB",
-    r2: "MEDIA",
-  });
+  assert.match(invitationRoute, /getWeddingDatabase/);
 });

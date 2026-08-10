@@ -1,35 +1,35 @@
-import { headers } from "next/headers";
-import { getChatGPTUser, type ChatGPTUser } from "../chatgpt-auth";
-import { getAdminAllowlist } from "../../db/runtime";
+import { cookies } from "next/headers";
+import { ADMIN_COOKIE_NAME, hasAdminConfiguration, verifyAdminSession } from "./admin-session";
+
+export type AdminUser = {
+  userId: string;
+  displayName: string;
+  email: string;
+};
 
 export type AdminAccess = {
-  user: ChatGPTUser | null;
+  user: AdminUser | null;
   isLocal: boolean;
   isAllowed: boolean;
 };
 
 export async function getAdminAccess(): Promise<AdminAccess> {
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "";
-  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+  const isLocal = process.env.NODE_ENV !== "production";
+  const localWithoutPassword = isLocal && !hasAdminConfiguration();
+  const cookieStore = await cookies();
+  const hasSession = verifyAdminSession(cookieStore.get(ADMIN_COOKIE_NAME)?.value);
 
-  if (isLocal) {
-    return {
-      isLocal: true,
-      isAllowed: true,
-      user: {
-        userId: "local-admin",
-        displayName: "Administrador local",
-        email: "local@invitacion.test",
-        fullName: "Administrador local",
-      },
-    };
+  if (!localWithoutPassword && !hasSession) {
+    return { user: null, isLocal, isAllowed: false };
   }
 
-  const user = await getChatGPTUser();
-  if (!user) return { user: null, isLocal: false, isAllowed: false };
-
-  const allowlist = getAdminAllowlist();
-  const isAllowed = allowlist.length === 0 || allowlist.includes(user.email.toLowerCase());
-  return { user, isLocal: false, isAllowed };
+  return {
+    isLocal,
+    isAllowed: true,
+    user: {
+      userId: "wedding-admin",
+      displayName: isLocal ? "Administrador local" : "Administrador",
+      email: "admin@invitacion-boda.local",
+    },
+  };
 }

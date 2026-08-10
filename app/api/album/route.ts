@@ -1,17 +1,18 @@
-import { ensureWeddingSchema, getD1, getMediaBucket } from "../../../db/runtime";
+import { getWeddingAlbumStore, getWeddingDatabase } from "../../../db/runtime";
 
-type GuestRow = { id: number };
+type GuestRow = { id: string };
 
 export async function GET() {
   try {
-    await ensureWeddingSchema();
-    const result = await getD1().prepare(`SELECT p.id, p.filename, p.created_at, g.name uploader
+    const { sql } = getWeddingDatabase();
+    const photos = await sql<{ id: string; filename: string; created_at: string; uploader: string }>`
+      SELECT p.id, p.filename, p.created_at, g.name AS uploader
       FROM album_photos p
       JOIN guests g ON g.id = p.guest_id
       WHERE p.status = 'approved'
       ORDER BY p.created_at DESC, p.id DESC
-      LIMIT 24`).all<{ id: number; filename: string; created_at: string; uploader: string }>();
-    return Response.json({ photos: (result.results ?? []).map((photo) => ({ ...photo, url: `/api/album/${photo.id}` })) });
+      LIMIT 24`;
+    return Response.json({ photos: photos.map((photo) => ({ ...photo, url: `/api/album/${photo.id}` })) });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "No fue posible cargar el álbum." }, { status: 500 });
   }
@@ -29,26 +30,27 @@ export async function POST(request: Request) {
       return Response.json({ error: "La fotografía debe pesar menos de 10 MB." }, { status: 400 });
     }
 
-    await ensureWeddingSchema();
-    const db = getD1();
-    const guest = await db.prepare("SELECT id FROM guests WHERE token = ?").bind(token).first<GuestRow>();
+    const { sql } = getWeddingDatabase();
+    const guestRows = await sql<GuestRow>`SELECT id FROM guests WHERE token = ${token} LIMIT 1`;
+    const guest = guestRows[0];
     if (!guest) return Response.json({ error: "Necesitas una invitación válida para subir fotografías." }, { status: 403 });
 
     const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").slice(0, 5) || "jpg";
     const objectKey = `album/${guest.id}/${crypto.randomUUID()}.${extension}`;
-    const bucket = getMediaBucket();
-    await bucket.put(objectKey, file.stream(), { httpMetadata: { contentType: file.type } });
+    const store = getWeddingAlbumStore();
+    await store.set(objectKey, await file.arrayBuffer(), {
+      metadata: { contentType: file.type, filename: file.name.slice(0, 150) },
+    });
 
     try {
-      const photo = await db.prepare(`INSERT INTO album_photos
-        (guest_id, object_key, filename, content_type)
-        VALUES (?, ?, ?, ?)
-        RETURNING id, filename, created_at`)
-        .bind(guest.id, objectKey, file.name.slice(0, 150), file.type)
-        .first<{ id: number; filename: string; created_at: string }>();
+      const photos = await sql<{ id: string; filename: string; created_at: string }>`
+        INSERT INTO album_photos (guest_id, object_key, filename, content_type)
+        VALUES (${guest.id}, ${objectKey}, ${file.name.slice(0, 150)}, ${file.type})
+        RETURNING id, filename, created_at`;
+      const photo = photos[0];
       return Response.json({ photo: photo ? { ...photo, url: `/api/album/${photo.id}` } : null }, { status: 201 });
     } catch (error) {
-      await bucket.delete(objectKey);
+      await store.delete(objectKey);
       throw error;
     }
   } catch (error) {

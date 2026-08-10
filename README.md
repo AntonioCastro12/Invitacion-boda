@@ -1,100 +1,64 @@
-# vinext-starter
+# Invitación de boda · Dulce & Eduardo
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Invitación digital VIP construida con Next.js y preparada para Netlify. Incluye portada tipo sobre, música, cuenta regresiva, galería, video, itinerario, mapas, RSVP, pases personalizados, QR, control de acceso, panel administrativo, calendario y álbum colaborativo.
 
-## Prerequisites
+## Requisitos
 
-- Node.js `>=22.13.0`
+- Node.js 22 o superior
+- Una cuenta de Netlify
 
-## Quick Start
+## Desarrollo local
+
+Para revisar la interfaz sin conectar los servicios de Netlify:
 
 ```bash
 npm install
 npm run dev
-npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+La aplicación estará disponible en `http://localhost:3000`. Cuando no existen variables administrativas en desarrollo, `/admin` permite acceso local automático.
 
-## Included Shape
+Para probar también Netlify Database y Netlify Blobs:
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npx netlify-cli login
+npx netlify-cli link
+npm run netlify:dev
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+Netlify Dev abre normalmente `http://localhost:8888` y replica el entorno de producción.
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+## Publicar en Netlify
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+1. Sube este repositorio a GitHub.
+2. En Netlify selecciona **Add new site > Import an existing project**.
+3. Elige el repositorio. Netlify detectará Next.js y usará `npm run build` desde `netlify.toml`.
+4. En **Site configuration > Environment variables**, agrega:
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+   - `ADMIN_PASSWORD`: contraseña privada para `/admin`.
+   - `ADMIN_SESSION_SECRET`: texto aleatorio largo para firmar la sesión.
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+   Puedes generar el secreto con:
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+   ```
 
-## Useful Commands
+5. Publica el sitio. Netlify Database aplicará la migración de `netlify/database/migrations` y creará el invitado de demostración.
 
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+No hace falta configurar redirects manuales: el adaptador oficial de Next.js de Netlify procesa `/i/[token]`, `/admin` y las rutas `/api/*`.
 
-## Learn More
+## Datos y archivos
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- Netlify Database (PostgreSQL): invitados, confirmaciones, accesos y metadatos del álbum.
+- Netlify Blobs: archivos de las fotografías del álbum.
+- Invitación de demostración: `/i/familia-castro-cuevas`.
+- Panel: `/admin`.
+
+## Comandos
+
+- `npm run dev`: desarrollo Next.js.
+- `npm run netlify:dev`: desarrollo con el entorno de Netlify.
+- `npm run build`: compilación de producción.
+- `npm test`: compilación y pruebas estructurales.
+- `npm run lint`: revisión del código.

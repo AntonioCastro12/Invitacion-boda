@@ -1,6 +1,6 @@
-import { ensureWeddingSchema, getD1 } from "../../../db/runtime";
+import { getWeddingDatabase } from "../../../db/runtime";
 
-type GuestRow = { id: number; max_passes: number };
+type GuestRow = { id: string; max_passes: number };
 
 export async function POST(request: Request) {
   try {
@@ -15,11 +15,9 @@ export async function POST(request: Request) {
       return Response.json({ error: "La confirmación está incompleta." }, { status: 400 });
     }
 
-    await ensureWeddingSchema();
-    const db = getD1();
-    const guest = await db.prepare("SELECT id, max_passes FROM guests WHERE token = ?")
-      .bind(token)
-      .first<GuestRow>();
+    const { sql } = getWeddingDatabase();
+    const guestRows = await sql<GuestRow>`SELECT id, max_passes FROM guests WHERE token = ${token} LIMIT 1`;
+    const guest = guestRows[0];
     if (!guest) return Response.json({ error: "Invitación no encontrada." }, { status: 404 });
 
     const guests = payload.attending
@@ -27,15 +25,13 @@ export async function POST(request: Request) {
       : 0;
     const message = payload.message?.trim().slice(0, 600) ?? "";
 
-    await db.prepare(`INSERT INTO rsvps (guest_id, attending, guests_count, message, updated_at)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(guest_id) DO UPDATE SET
-        attending = excluded.attending,
-        guests_count = excluded.guests_count,
-        message = excluded.message,
-        updated_at = CURRENT_TIMESTAMP`)
-      .bind(guest.id, payload.attending ? 1 : 0, guests, message)
-      .run();
+    await sql`INSERT INTO rsvps (guest_id, attending, guests_count, message, updated_at)
+      VALUES (${guest.id}, ${payload.attending}, ${guests}, ${message}, CURRENT_TIMESTAMP)
+      ON CONFLICT (guest_id) DO UPDATE SET
+        attending = EXCLUDED.attending,
+        guests_count = EXCLUDED.guests_count,
+        message = EXCLUDED.message,
+        updated_at = CURRENT_TIMESTAMP`;
 
     return Response.json({ ok: true, attending: payload.attending, guests });
   } catch (error) {
