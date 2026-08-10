@@ -40,7 +40,7 @@ export default function Hero({ data, opened }) {
           <motion.b variants={itemVariants}>&amp;</motion.b>
           <motion.span variants={itemVariants}>{couple.groom}</motion.span>
         </motion.h1>
-        <motion.div className="hero__date" aria-label="10 de octubre de 2026" variants={itemVariants}>
+        <motion.div className="hero__date" aria-label="12 de octubre de 2026" variants={itemVariants}>
           <i />
           <time dateTime={data.date}>{data.dateDisplay}</time>
           <i />
