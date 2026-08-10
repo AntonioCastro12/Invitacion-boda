@@ -13,7 +13,7 @@ export const weddingData = {
   heroMessage:
     "El mejor capítulo de nuestra historia está por comenzar y queremos compartirlo contigo.",
   guest: {
-    name: "Familia Castro Cuevas",
+    name: "Familia Alfaro Hernandez",
     passes: 4,
   },
   ceremony: {
@@ -59,7 +59,7 @@ export const weddingData = {
   ],
   bank: {
     bank: "Banco Nacional",
-    holder: "Dulce & Eduardo",
+    holder: "Susana & Gerardo",
     clabe: "000 000 0000000000 0",
   },
   photoCredits: {

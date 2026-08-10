@@ -47,13 +47,15 @@ test("keeps the envelope, mobile content and hydration-safe countdown", async ()
   assert.match(data, /groom: "[^"]+"/);
 });
 
-test("keeps all VIP capabilities as interactive demonstrations", async () => {
-  const [app, pass, rsvp, album, admin] = await Promise.all([
+test("keeps all VIP capabilities as animated interactive demonstrations", async () => {
+  const [app, pass, rsvp, album, admin, reveal, video] = await Promise.all([
     readFile(new URL("../src/App.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/InvitationPass.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/RSVP.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/CollaborativeAlbum.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/AdminDashboard.jsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/SectionReveal.jsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/WeddingVideo.jsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(app, /<AddToCalendar/);
@@ -64,5 +66,15 @@ test("keeps all VIP capabilities as interactive demonstrations", async () => {
   assert.match(admin, /Control de acceso/);
   assert.match(admin, /Nueva invitación/);
   assert.match(admin, /wedding-demo-guests/);
+  assert.match(app, /<SectionReveal direction="left">/);
+  assert.match(app, /<SectionReveal direction="right">/);
+  assert.match(app, /<SectionReveal direction="zoom">/);
+  assert.match(reveal, /useReducedMotion/);
+  assert.match(reveal, /whileInView/);
+  assert.match(app, /invitation-locked/);
+  assert.match(video, /IntersectionObserver/);
+  assert.match(video, /autoPlay=\{!reduceMotion\}/);
+  assert.match(video, /muted/);
+  assert.match(video, /element\.pause\(\)/);
   for (const source of [app, rsvp, album, admin]) assert.doesNotMatch(source, /fetch\("\/api/);
 });

@@ -21,6 +21,7 @@ import BotanicalAccent from "./components/BotanicalAccent";
 import ScrollProgress from "./components/ScrollProgress";
 import AddToCalendar from "./components/AddToCalendar";
 import CollaborativeAlbum from "./components/CollaborativeAlbum";
+import SectionReveal from "./components/SectionReveal";
 import { weddingData } from "./data/weddingData";
 
 const DEMO_TOKEN = "familia-castro-cuevas";
@@ -41,9 +42,15 @@ export default function WeddingApp() {
   }, []);
 
   useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = opened ? previousOverflow : "hidden";
-    return () => { document.body.style.overflow = previousOverflow; };
+    const root = document.documentElement;
+    root.classList.toggle("invitation-locked", !opened);
+    document.body.classList.toggle("invitation-locked", !opened);
+    if (!opened) window.scrollTo({ top: 0, behavior: "auto" });
+
+    return () => {
+      root.classList.remove("invitation-locked");
+      document.body.classList.remove("invitation-locked");
+    };
   }, [opened]);
 
   const openInvitation = () => {
@@ -74,31 +81,33 @@ export default function WeddingApp() {
         inert={!opened}
       >
         <Hero data={weddingData} opened={opened} />
-        <Countdown date={weddingData.date} />
-        <Gallery photos={weddingData.gallery} />
-        <WeddingVideo video={weddingData.video} />
-        <Itinerary items={weddingData.itinerary} />
-        <AddToCalendar data={weddingData} />
-        <section className="section locations-section" aria-labelledby="locations-title">
-          <BotanicalAccent position="top-right" subtle />
-          <SectionHeading
-            eyebrow="Cómo llegar"
-            title="Nuestros lugares"
-            description="Aquí comienza el camino hacia nuestro sí para siempre."
-          />
-          <div className="locations-grid">
-            <Location place={weddingData.ceremony} index={0} />
-            <Location place={weddingData.reception} index={1} />
-          </div>
-        </section>
-        <InvitationPass guest={guest} token={inviteToken} />
-        <RSVP couple={weddingData.couple} whatsapp={weddingData.whatsapp} maxGuests={guest.passes} token={inviteToken} />
-        <DressCode />
-        <Gifts gifts={weddingData.gifts} bank={weddingData.bank} />
-        <CollaborativeAlbum />
-        <FinalMessage data={weddingData} />
+        <SectionReveal direction="up"><Countdown date={weddingData.date} /></SectionReveal>
+        <SectionReveal direction="left"><Gallery photos={weddingData.gallery} /></SectionReveal>
+        <SectionReveal direction="right"><WeddingVideo video={weddingData.video} /></SectionReveal>
+        <SectionReveal direction="up"><Itinerary items={weddingData.itinerary} /></SectionReveal>
+        <SectionReveal direction="zoom"><AddToCalendar data={weddingData} /></SectionReveal>
+        <SectionReveal direction="left">
+          <section className="section locations-section" aria-labelledby="locations-title">
+            <BotanicalAccent position="top-right" subtle />
+            <SectionHeading
+              eyebrow="Cómo llegar"
+              title="Nuestros lugares"
+              description="Aquí comienza el camino hacia nuestro sí para siempre."
+            />
+            <div className="locations-grid">
+              <Location place={weddingData.ceremony} index={0} />
+              <Location place={weddingData.reception} index={1} />
+            </div>
+          </section>
+        </SectionReveal>
+        <SectionReveal direction="right"><InvitationPass guest={guest} token={inviteToken} /></SectionReveal>
+        <SectionReveal direction="up"><RSVP couple={weddingData.couple} whatsapp={weddingData.whatsapp} maxGuests={guest.passes} token={inviteToken} /></SectionReveal>
+        <SectionReveal direction="left"><DressCode /></SectionReveal>
+        <SectionReveal direction="right"><Gifts gifts={weddingData.gifts} bank={weddingData.bank} /></SectionReveal>
+        <SectionReveal direction="up"><CollaborativeAlbum /></SectionReveal>
+        <SectionReveal direction="zoom"><FinalMessage data={weddingData} /></SectionReveal>
       </motion.main>
-      <Footer couple={weddingData.couple} />
+      <SectionReveal direction="up"><Footer couple={weddingData.couple} /></SectionReveal>
       <MusicPlayer ref={musicRef} src={weddingData.music} />
     </div>
   );
