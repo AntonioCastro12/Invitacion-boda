@@ -1,69 +1,41 @@
 # Invitación de boda · Dulce & Eduardo
 
-Invitación digital VIP construida con Next.js y preparada para Netlify. Incluye portada tipo sobre, música, cuenta regresiva, galería, video, itinerario, mapas, RSVP, pases personalizados, QR, control de acceso, panel administrativo, calendario y álbum colaborativo.
+Demostración interactiva de una invitación digital VIP. Incluye sobre animado, música, cuenta regresiva, galería, video, itinerario, mapas, RSVP, pase personalizado, QR, vestimenta, regalos, calendario, álbum colaborativo y panel administrativo.
 
-## Requisitos
+## Alcance de la demostración
 
-- Node.js 22 o superior
-- Una cuenta de Netlify
+La aplicación es completamente estática y no necesita servidor, base de datos, autenticación ni servicios de pago. Las funciones administrativas, RSVP, carga de fotografías y control de acceso se simulan en el navegador para poder mostrarlas en una presentación o video.
+
+Los datos simulados permanecen temporalmente en el navegador. No deben utilizarse para un evento real sin conectar un servicio de almacenamiento.
 
 ## Desarrollo local
-
-Para revisar la interfaz:
 
 ```bash
 npm install
 npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:3000`. Cuando no existen variables administrativas en desarrollo, `/admin` permite acceso local automático.
+- Invitación: `http://localhost:3000`
+- Panel de muestra: `http://localhost:3000/admin`
 
-Para probar también el almacenamiento persistente de Netlify Blobs:
+Puedes demostrar una invitación personalizada con parámetros:
 
-```bash
-npx netlify-cli login
-npx netlify-cli link
-npm run netlify:dev
+```text
+/?invitado=Familia%20Ejemplo&lugares=4&token=familia-ejemplo
 ```
-
-Netlify Dev abre normalmente `http://localhost:8888` y replica el entorno de producción.
 
 ## Publicar en Netlify
 
-1. Sube este repositorio a GitHub.
-2. En Netlify selecciona **Add new site > Import an existing project**.
-3. Elige el repositorio. `netlify.toml` fija la compilación en `npm run build` y la publicación en `.next`.
-4. En **Site configuration > Environment variables**, agrega:
+El archivo `netlify.toml` ya contiene la configuración completa:
 
-   - `ADMIN_PASSWORD`: contraseña privada para `/admin`.
-   - `ADMIN_SESSION_SECRET`: texto aleatorio largo para firmar la sesión.
+- Comando: `npm run build`
+- Directorio de publicación: `out`
 
-   Puedes generar el secreto con:
-
-   ```bash
-   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-   ```
-
-5. Publica el sitio. Netlify Blobs se aprovisiona automáticamente y no requiere habilitar Netlify Database.
-
-No hace falta configurar redirects manuales: el adaptador oficial de Next.js de Netlify procesa `/i/[token]`, `/admin` y las rutas `/api/*`.
-
-## Datos y archivos
-
-Netlify Blobs guarda invitados, confirmaciones, accesos, metadatos y fotografías en dos almacenes:
-
-- `wedding-data`: registros estructurados de la invitación.
-- `wedding-album`: archivos de las fotografías.
-
-Rutas importantes:
-
-- Invitación de demostración: `/i/familia-castro-cuevas`.
-- Panel: `/admin`.
+No se necesitan variables de entorno, funciones, plugins ni redirects. Después de subir los cambios a GitHub, Netlify publicará los archivos estáticos generados en `out`.
 
 ## Comandos
 
-- `npm run dev`: desarrollo Next.js.
-- `npm run netlify:dev`: desarrollo con el entorno de Netlify.
-- `npm run build`: compilación de producción.
-- `npm test`: compilación y pruebas estructurales.
-- `npm run lint`: revisión del código.
+- `npm run dev`: desarrollo local.
+- `npm run build`: genera el sitio estático.
+- `npm test`: genera el sitio y ejecuta las pruebas.
+- `npm run lint`: revisa el código.

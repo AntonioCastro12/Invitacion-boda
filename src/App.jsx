@@ -25,35 +25,25 @@ import { weddingData } from "./data/weddingData";
 
 const DEMO_TOKEN = "familia-castro-cuevas";
 
-export default function WeddingApp({ inviteToken = DEMO_TOKEN }) {
+export default function WeddingApp() {
   const [opened, setOpened] = useState(false);
   const [guest, setGuest] = useState(weddingData.guest);
-  const [inviteNotice, setInviteNotice] = useState("");
+  const [inviteToken, setInviteToken] = useState(DEMO_TOKEN);
   const musicRef = useRef(null);
 
   useEffect(() => {
-    let active = true;
-    fetch(`/api/invitations/${encodeURIComponent(inviteToken)}`)
-      .then(async (response) => {
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error ?? "No fue posible personalizar la invitación.");
-        if (active && payload.guest) {
-          setGuest({ name: payload.guest.name, passes: payload.guest.passes });
-          setInviteNotice("");
-        }
-      })
-      .catch((error) => {
-        if (active) setInviteNotice(error instanceof Error ? error.message : "No fue posible personalizar la invitación.");
-      });
-    return () => { active = false; };
-  }, [inviteToken]);
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("invitado")?.trim().slice(0, 100);
+    const passes = Math.min(Math.max(Number(params.get("lugares")) || weddingData.guest.passes, 1), 20);
+    const token = params.get("token")?.trim().slice(0, 80);
+    if (name) setGuest({ name, passes });
+    if (token) setInviteToken(token);
+  }, []);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = opened ? previousOverflow : "hidden";
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
+    return () => { document.body.style.overflow = previousOverflow; };
   }, [opened]);
 
   const openInvitation = () => {
@@ -83,7 +73,6 @@ export default function WeddingApp({ inviteToken = DEMO_TOKEN }) {
         aria-hidden={!opened}
         inert={!opened}
       >
-        {inviteNotice && <p className="invite-notice" role="status">{inviteNotice}</p>}
         <Hero data={weddingData} opened={opened} />
         <Countdown date={weddingData.date} />
         <Gallery photos={weddingData.gallery} />
@@ -103,15 +92,10 @@ export default function WeddingApp({ inviteToken = DEMO_TOKEN }) {
           </div>
         </section>
         <InvitationPass guest={guest} token={inviteToken} />
-        <RSVP
-          couple={weddingData.couple}
-          whatsapp={weddingData.whatsapp}
-          maxGuests={guest.passes}
-          token={inviteToken}
-        />
+        <RSVP couple={weddingData.couple} whatsapp={weddingData.whatsapp} maxGuests={guest.passes} token={inviteToken} />
         <DressCode />
         <Gifts gifts={weddingData.gifts} bank={weddingData.bank} />
-        <CollaborativeAlbum token={inviteToken} />
+        <CollaborativeAlbum />
         <FinalMessage data={weddingData} />
       </motion.main>
       <Footer couple={weddingData.couple} />

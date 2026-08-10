@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Check, Copy, Heart, Share2, TicketCheck, Users } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import SectionHeading from "./SectionHeading";
+import { weddingData } from "../data/weddingData";
 
 export default function InvitationPass({ guest, token }) {
   const [origin, setOrigin] = useState("");
@@ -12,7 +13,9 @@ export default function InvitationPass({ guest, token }) {
 
   useEffect(() => setOrigin(window.location.origin), []);
 
-  const inviteUrl = origin ? `${origin}/i/${token}` : "";
+  const inviteUrl = origin
+    ? `${origin}/?invitado=${encodeURIComponent(guest.name)}&lugares=${guest.passes}&token=${encodeURIComponent(token)}`
+    : "";
   const checkInUrl = origin ? `${origin}/admin?checkin=${encodeURIComponent(token)}` : "";
 
   const copyInvite = async () => {
@@ -25,7 +28,7 @@ export default function InvitationPass({ guest, token }) {
   const shareInvite = async () => {
     if (!inviteUrl) return;
     if (navigator.share) {
-      await navigator.share({ title: "Boda de Dulce y Eduardo", text: `Invitación para ${guest.name}`, url: inviteUrl });
+      await navigator.share({ title: `Boda de ${weddingData.couple.bride} y ${weddingData.couple.groom}`, text: `Invitación para ${guest.name}`, url: inviteUrl });
     } else {
       await copyInvite();
     }

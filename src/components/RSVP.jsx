@@ -18,37 +18,28 @@ export default function RSVP({ couple, whatsapp, maxGuests, token }) {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const submit = async (event) => {
+  const submit = (event) => {
     event.preventDefault();
-    const answer =
-      form.attendance === "yes"
-        ? `Confirmamos nuestra asistencia a la boda de ${couple.bride} y ${couple.groom}.`
-        : `Lamentablemente no podremos acompañarlos en la boda de ${couple.bride} y ${couple.groom}.`;
-    const guestsLine = form.attendance === "yes" ? `\nNúmero de invitados: ${form.guests}.` : "";
+    const attending = form.attendance === "yes";
+    const guests = attending ? Number(form.guests) : 0;
+    localStorage.setItem(`wedding-demo-rsvp:${token}`, JSON.stringify({
+      attending,
+      guests_count: guests,
+      name: form.name.trim(),
+      message: form.message.trim(),
+    }));
+
+    setStatus({ type: "success", message: "¡Confirmación simulada! Ya puedes mostrarla en el panel de demostración." });
+
+    const answer = attending
+      ? `Confirmamos nuestra asistencia a la boda de ${couple.bride} y ${couple.groom}.`
+      : `Lamentablemente no podremos acompañarlos en la boda de ${couple.bride} y ${couple.groom}.`;
+    const guestsLine = attending ? `\nNúmero de invitados: ${guests}.` : "";
     const note = form.message.trim() ? `\nMensaje: ${form.message.trim()}` : "";
     const text = `Hola, somos ${form.name.trim()}.\n${answer}${guestsLine}${note}`;
-    setStatus({ type: "loading", message: "Guardando tu confirmación…" });
-    try {
-      const response = await fetch("/api/rsvp", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          token,
-          attending: form.attendance === "yes",
-          guests: Number(form.guests),
-          message: form.message,
-        }),
-      });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error ?? "No fue posible guardar la confirmación.");
-      setStatus({ type: "success", message: "¡Confirmación guardada! Gracias por responder." });
-
-      const localNumber = whatsapp.replace(/\D/g, "").slice(-10);
-      if (!/^0+$/.test(localNumber)) {
-        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
-      }
-    } catch (error) {
-      setStatus({ type: "error", message: error instanceof Error ? error.message : "No fue posible guardar la confirmación." });
+    const localNumber = whatsapp.replace(/\D/g, "").slice(-10);
+    if (!/^0+$/.test(localNumber)) {
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -94,8 +85,8 @@ export default function RSVP({ couple, whatsapp, maxGuests, token }) {
           <span>Mensaje para los novios <small>Opcional</small></span>
           <textarea name="message" value={form.message} onChange={update} rows="4" />
         </label>
-        <button className="button button--primary" type="submit" disabled={status.type === "loading"}>
-          <MessageCircle size={18} /> {status.type === "loading" ? "Guardando…" : "Confirmar asistencia"}
+        <button className="button button--primary" type="submit">
+          <MessageCircle size={18} /> Confirmar asistencia
         </button>
         {status.message && <p className={`form-status form-status--${status.type}`} role="status">{status.message}</p>}
       </motion.form>
