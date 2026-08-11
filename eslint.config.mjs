@@ -1,41 +1,25 @@
-import { defineConfig, globalIgnores } from "eslint/config";
 import eslint from "@eslint/js";
-import next from "@next/eslint-plugin-next";
-import jsxA11y from "eslint-plugin-jsx-a11y";
+import globals from "globals";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 
-const eslintConfig = defineConfig([
-  globalIgnores([
-    ".next/**",
-    "dist/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+export default [
+  { ignores: ["dist/**", "node_modules/**", "out/**", ".next/**"] },
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
   react.configs.flat.recommended,
   react.configs.flat["jsx-runtime"],
-  reactHooks.configs.flat["recommended-latest"],
+  reactHooks.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,
-  next.configs["core-web-vitals"],
   {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...globals.serviceworker,
-      },
-    },
-    settings: {
-      react: {
-        version: "detect",
-      },
-    },
-  },
-]);
-
-export default eslintConfig;
+    files: ["src/**/*.{js,jsx}", "vite.config.js"],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    settings: { react: { version: "detect" } },
+    rules: {
+      "react/prop-types": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "jsx-a11y/media-has-caption": "off",
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+    }
+  }
+];

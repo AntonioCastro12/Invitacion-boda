@@ -1,0 +1,8 @@
+import { Copy, Edit3, ExternalLink, MessageCircle, Trash2 } from "lucide-react";
+import { invitationMessage, createWhatsAppUrl } from "../utils/whatsapp";
+
+export default function GuestTable({ event, guests, onEdit, onDelete, onCopy }) {
+  const baseUrl = (import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
+  if (!guests.length) return <div className="empty-state"><span>✦</span><h3>Aún no hay invitados</h3><p>Agrega la primera familia para generar su enlace personalizado.</p></div>;
+  return <div className="table-wrap"><table><thead><tr><th>Familia / Invitado</th><th>Teléfono</th><th>Pases</th><th>Código</th><th>Enlace</th><th>Acciones</th></tr></thead><tbody>{guests.map((guest) => { const url = `${baseUrl}/evento/${event.slug}/${guest.code}`; const whatsapp = createWhatsAppUrl(guest.phone, invitationMessage(event, guest, url)); return <tr key={guest.id}><td><strong>{guest.name}</strong><small>{guest.table_name || "Sin mesa"}</small></td><td>{guest.phone || "—"}</td><td><span className="pass-badge">{guest.passes}</span></td><td><code>{guest.code}</code></td><td><span className="link-cell">{url}</span></td><td><div className="action-row"><a href={url} target="_blank" rel="noreferrer" title="Ver invitación"><ExternalLink /></a><button type="button" onClick={() => onCopy(url)} title="Copiar enlace"><Copy /></button><a href={whatsapp || "#"} target="_blank" rel="noreferrer" className={!whatsapp ? "disabled" : ""} title="Enviar por WhatsApp"><MessageCircle /></a><button type="button" onClick={() => onEdit(guest)} title="Editar"><Edit3 /></button><button type="button" className="danger" onClick={() => onDelete(guest)} title="Eliminar"><Trash2 /></button></div></td></tr>; })}</tbody></table></div>;
+}
