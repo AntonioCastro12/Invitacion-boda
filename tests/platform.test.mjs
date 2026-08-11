@@ -65,3 +65,21 @@ test("nuestra historia funciona como carrusel táctil", async () => {
   assert.match(gallery, /Fotografía anterior/);
   assert.match(gallery, /Fotografía siguiente/);
 });
+
+test("usa el WhatsApp configurado para las confirmaciones", async () => {
+  const [demo, seed] = await Promise.all([read("src/data/demoData.js"), read("supabase/seed.sql")]);
+  assert.match(demo, /whatsapp: "5214623105704"/);
+  assert.match(seed, /'5214623105704'/);
+});
+
+test("el panel transforma invitados en tarjetas móviles", async () => {
+  const [table, styles] = await Promise.all([
+    read("src/admin/GuestTable.jsx"),
+    read("src/styles/extensions.css")
+  ]);
+  assert.match(table, /data-label="Invitado"/);
+  assert.match(table, /data-label="Acciones"/);
+  assert.match(styles, /\.guest-table td::before/);
+  assert.match(styles, /grid-template-columns: repeat\(5, 1fr\)/);
+  assert.match(styles, /font-size: 16px/);
+});

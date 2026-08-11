@@ -18,7 +18,7 @@ export const demoEvent = {
     bank: { bank: "Banco Nacional", holder: "Dulce & Eduardo", clabe: "000 000 0000000000 0" }
   },
   price_reference: 900,
-  whatsapp: "524621234567",
+  whatsapp: "5214623105704",
   ceremony_name: "Templo de San Francisco",
   ceremony_address: "Centro histórico, Guanajuato, Gto.",
   ceremony_lat: 21.01858,
