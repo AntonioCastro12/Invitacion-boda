@@ -1,7 +1,7 @@
 export const demoEvent = {
   id: "11111111-1111-4111-8111-111111111111",
   client_id: "demo-client",
-  name: "Dulce & Eduardo",
+  name: "Fernanda & Daniel",
   slug: "dulce-eduardo",
   event_type: "Boda",
   event_date: "2026-10-10",

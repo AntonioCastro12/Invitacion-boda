@@ -9,7 +9,7 @@ export default function LandingPage() {
       {isDemoMode && <div className="demo-banner">Modo demostración · Conecta Supabase para utilizar datos reales</div>}
       <section className="landing-hero">
         <div><span className="landing-pill">Invitaciones digitales con gestión inteligente</span><h1>Cada evento merece una experiencia <em>inolvidable.</em></h1><p>Crea invitaciones personalizadas, organiza familias y comparte cada enlace en segundos desde un panel elegante y seguro.</p><div className="hero-actions"><Link className="button button--gold" to="/evento/dulce-eduardo/A7X92">Ver invitación de muestra <ArrowRight size={18} /></Link><Link className="button button--light" to="/login">Explorar el panel</Link></div></div>
-        <div className="landing-preview"><span>Invitación privada</span><h2>Dulce <small>&</small> Eduardo</h2><p>10 · octubre · 2026</p><div className="preview-pass">Familia Hernández <strong>4 lugares</strong></div></div>
+        <div className="landing-preview"><span>Invitación privada</span><h2>Fernanda <small>&</small> Daniel</h2><p>10 · octubre · 2026</p><div className="preview-pass">Familia Hernández <strong>4 lugares</strong></div></div>
       </section>
       <section className="feature-grid">
         <article><CalendarHeart /><h3>Multi-evento</h3><p>Una base reutilizable para bodas, XV años, bautizos y celebraciones.</p></article>
