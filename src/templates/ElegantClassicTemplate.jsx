@@ -53,7 +53,7 @@ export default function ElegantClassicTemplate({ event, guest }) {
         <SectionReveal><WhatsAppConfirmation event={event} guest={guest} /></SectionReveal>
         <SectionReveal><DressCode config={config.dress_code} /></SectionReveal>
         <SectionReveal><GiftRegistry registries={event.gift_registry} bank={config.bank} /></SectionReveal>
-        <SectionReveal><CollaborativeAlbum /></SectionReveal>
+        <SectionReveal><CollaborativeAlbum event={event} guest={guest} /></SectionReveal>
         <SectionReveal><FinalMessage event={event} /></SectionReveal>
         <Footer event={event} />
       </motion.main>

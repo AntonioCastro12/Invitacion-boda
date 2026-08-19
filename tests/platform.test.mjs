@@ -83,3 +83,36 @@ test("el panel transforma invitados en tarjetas móviles", async () => {
   assert.match(styles, /grid-template-columns: repeat\(5, 1fr\)/);
   assert.match(styles, /font-size: 16px/);
 });
+
+test("ofrece un álbum independiente mediante botón y QR con respaldo local", async () => {
+  const [app, albumAccess, albumPage, service] = await Promise.all([
+    read("src/App.jsx"),
+    read("src/components/invitation/CollaborativeAlbum.jsx"),
+    read("src/pages/AlbumPage.jsx"),
+    read("src/services/localAlbumService.js")
+  ]);
+  assert.match(app, /album\/:eventoSlug\/:codigoInvitado/);
+  assert.match(albumAccess, /QRCodeSVG/);
+  assert.match(albumAccess, /Abrir álbum digital/);
+  assert.match(albumPage, /accept="image\/jpeg,image\/png,image\/webp,image\/gif"/);
+  assert.match(albumPage, /removeAlbumPhoto/);
+  assert.match(service, /indexedDB/);
+  assert.match(service, /MAX_PHOTOS = 30/);
+});
+
+test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes", async () => {
+  const [service, preview, page, migration] = await Promise.all([
+    read("src/services/albumService.js"),
+    read("src/components/invitation/CollaborativeAlbum.jsx"),
+    read("src/pages/AlbumPage.jsx"),
+    read("supabase/migrations/202608190001_shared_event_album.sql")
+  ]);
+  assert.match(service, /get_public_album/);
+  assert.match(service, /submit_album_photo/);
+  assert.match(service, /event-albums/);
+  assert.match(preview, /photos\.slice\(0, 4\)/);
+  assert.match(page, /album-social-feed/);
+  assert.match(migration, /enable row level security/);
+  assert.match(migration, /revoke all on public\.album_photos from anon/);
+  assert.match(migration, /create index album_photos_event_created_idx/);
+});

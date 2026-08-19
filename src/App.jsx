@@ -3,6 +3,7 @@ import ProtectedRoute from "./admin/ProtectedRoute";
 import PanelLayout from "./admin/PanelLayout";
 import LandingPage from "./pages/LandingPage";
 import InvitationPage from "./pages/InvitationPage";
+import AlbumPage from "./pages/AlbumPage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import GuestsPage from "./pages/GuestsPage";
@@ -15,6 +16,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/evento/:eventoSlug/:codigoInvitado" element={<InvitationPage />} />
+      <Route path="/album/:eventoSlug/:codigoInvitado" element={<AlbumPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/panel" element={<PanelLayout />}>

@@ -24,6 +24,7 @@ Mientras `VITE_DEMO_MODE=true` y no existan credenciales de Supabase, la aplicac
    - `supabase/migrations/202608110001_initial_schema.sql`
    - `supabase/migrations/202608110002_storage.sql`
    - `supabase/migrations/202608110003_invitation_templates.sql`
+   - `supabase/migrations/202608190001_shared_event_album.sql`
 3. En **Authentication > Users**, crea el usuario `dulce.eduardo@rcminvitaciones.com` con una contraseña segura.
 4. Ejecuta `supabase/seed.sql` para crear el evento y los cuatro invitados de prueba.
 5. Copia `.env.example` como `.env` y completa:
@@ -56,6 +57,7 @@ where email = 'TU_CORREO';
 
 - `/` — presentación de RCM Invitaciones.
 - `/evento/:eventoSlug/:codigoInvitado` — invitación pública personalizada.
+- `/album/:eventoSlug/:codigoInvitado` — álbum digital local abierto desde botón o QR.
 - `/login` — autenticación Supabase.
 - `/panel` — dashboard del cliente.
 - `/panel/invitados` — CRUD, copiado y WhatsApp.
@@ -67,6 +69,12 @@ where email = 'TU_CORREO';
 Cada evento guarda un `template_key`. React consulta ese valor y selecciona el diseño desde `src/templates/InvitationTemplateRenderer.jsx`. Dulce & Eduardo utiliza `elegante-clasica`, que recupera el sobre animado, el sello con iniciales y la portada romántica anterior.
 
 El campo `template_config` almacena contenido visual propio de cada evento —fotografías, video, imágenes de ubicaciones, dress code y datos bancarios— sin dejar esos datos fijos dentro de los componentes.
+
+### Álbum compartido
+
+Con Supabase configurado, el álbum usa el bucket público `event-albums` y la tabla `album_photos`. Todos los invitados con un enlace válido del mismo evento ven el mismo feed y pueden publicar imágenes de hasta 10 MB. La invitación muestra las cuatro publicaciones más recientes junto al QR.
+
+Ejecuta también `supabase/migrations/202608190001_shared_event_album.sql`. Sin Supabase, el proyecto conserva una demostración con cuatro fotos de muestra e IndexedDB; las subidas locales sólo aparecen en el navegador que las guardó.
 
 Para añadir otro diseño no es necesario crear otro proyecto: se crea un componente dentro de `src/templates`, se registra su clave en el renderer y se asigna esa clave al evento. El panel permite elegir entre las plantillas registradas.
 
