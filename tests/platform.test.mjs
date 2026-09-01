@@ -97,7 +97,7 @@ test("ofrece un álbum independiente mediante botón y QR con respaldo local", a
   assert.match(albumPage, /accept="image\/jpeg,image\/png,image\/webp,image\/gif"/);
   assert.match(albumPage, /removeAlbumPhoto/);
   assert.match(service, /indexedDB/);
-  assert.match(service, /MAX_PHOTOS = 30/);
+  assert.match(service, /maxPhotos: null/);
 });
 
 test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes", async () => {
@@ -107,7 +107,7 @@ test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes"
     read("src/pages/AlbumPage.jsx"),
     read("supabase/migrations/202608190001_shared_event_album.sql")
   ]);
-  assert.match(service, /get_public_album/);
+  assert.match(service, /album-access/);
   assert.match(service, /submit_album_photo/);
   assert.match(service, /event-albums/);
   assert.match(preview, /photos\.slice\(0, 4\)/);
@@ -115,4 +115,167 @@ test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes"
   assert.match(migration, /enable row level security/);
   assert.match(migration, /revoke all on public\.album_photos from anon/);
   assert.match(migration, /create index album_photos_event_created_idx/);
+});
+
+test("activa servicios por paquete sin permitir que el cliente elija diseño", async () => {
+  const [catalog, admin, template, settings, migration] = await Promise.all([
+    read("src/data/packageCatalog.js"),
+    read("src/pages/AdminPage.jsx"),
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("src/pages/EventSettingsPage.jsx"),
+    read("supabase/migrations/202608200001_event_package_entitlements.sql")
+  ]);
+  for (const price of [250, 500, 900, 1500, 2500, 5000]) assert.match(catalog, new RegExp(`price: ${price}`));
+  assert.match(admin, /updateDemoProject/);
+  assert.match(admin, /featureOverrides/);
+  assert.match(template, /features\.music/);
+  assert.match(template, /features\.collaborative_album/);
+  assert.doesNotMatch(settings, /availableTemplates/);
+  assert.match(migration, /event_entitlements/);
+  assert.match(migration, /entitlements_update_admin/);
+  assert.match(migration, /feature_overrides/);
+});
+
+test("ofrece una cola segura para enviar invitaciones por WhatsApp", async () => {
+  const [guestsPage, bulkModal] = await Promise.all([
+    read("src/pages/GuestsPage.jsx"),
+    read("src/admin/BulkWhatsAppModal.jsx")
+  ]);
+  assert.match(guestsPage, /Enviar a todos/);
+  assert.match(guestsPage, /BulkWhatsAppModal/);
+  assert.match(bulkModal, /invitationMessage/);
+  assert.match(bulkModal, /createWhatsAppUrl/);
+  assert.match(bulkModal, /WhatsApp requiere confirmar cada envío/);
+  assert.match(bulkModal, /withoutPhone/);
+});
+
+test("sincroniza el catálogo comercial con el PDF de paquetes", async () => {
+  const [catalog, admin, template, migration] = await Promise.all([
+    read("src/data/packageCatalog.js"),
+    read("src/pages/AdminPage.jsx"),
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("supabase/migrations/202608200005_package_catalog_pdf.sql")
+  ]);
+  for (const name of ["Esencial", "Clásica", "Elegante", "Premium", "Premium Plus", "VIP"]) assert.match(catalog, new RegExp(`name: "${name}"`));
+  assert.match(catalog, /Invitación digital de una sola página/);
+  assert.match(catalog, /Prevención de QR duplicados/);
+  assert.match(catalog, /packageComparison/);
+  assert.match(catalog, /Confirmación de asistencia/);
+  assert.doesNotMatch(catalog, /label: "RSVP"/);
+  assert.match(admin, /Comparativa rápida/);
+  assert.match(admin, /¿Qué significa confirmación de asistencia\?/);
+  assert.match(admin, /recommendedFor/);
+  assert.match(template, /features\.embedded_video/);
+  assert.match(template, /features\.add_calendar/);
+  assert.match(migration, /name = 'Clásica'/);
+});
+
+test("aísla confirmaciones y convierte el álbum en privado", async () => {
+  const [rsvpService, confirmations, albumService, migration, edgeFunction] = await Promise.all([
+    read("src/services/rsvpService.js"),
+    read("src/pages/ConfirmationsPage.jsx"),
+    read("src/services/albumService.js"),
+    read("supabase/migrations/202608200002_private_album_and_rsvp.sql"),
+    read("supabase/functions/album-access/index.ts")
+  ]);
+  assert.match(rsvpService, /submit_rsvp/);
+  assert.match(confirmations, /Confirmados/);
+  assert.match(migration, /create table public\.rsvps/);
+  assert.match(migration, /update storage\.buckets set public = false/);
+  assert.match(migration, /rsvps_owner_select/);
+  assert.match(albumService, /uploadToSignedUrl/);
+  assert.match(edgeFunction, /createSignedUrls/);
+  assert.match(edgeFunction, /event\.id/);
+});
+
+test("registra accesos VIP sin duplicados y aislados por evento", async () => {
+  const [app, page, service, migration] = await Promise.all([
+    read("src/App.jsx"),
+    read("src/pages/CheckInPage.jsx"),
+    read("src/services/checkInService.js"),
+    read("supabase/migrations/202608200003_check_ins.sql")
+  ]);
+  assert.match(app, /path="acceso"/);
+  assert.match(page, /BarcodeDetector/);
+  assert.match(service, /register_check_in/);
+  assert.match(service, /entrada duplicada/);
+  assert.match(migration, /unique \(event_id, guest_id\)/);
+  assert.match(migration, /check_ins_owner_select/);
+  assert.match(migration, /owns_event\(p_event_id\)/);
+  assert.match(migration, /revoke all on public\.check_ins from anon/);
+});
+
+test("presenta estadísticas y exporta un reporte operativo seguro", async () => {
+  const [app, page] = await Promise.all([read("src/App.jsx"), read("src/pages/StatisticsPage.jsx")]);
+  assert.match(app, /path="estadisticas"/);
+  assert.match(page, /Exportar CSV/);
+  assert.match(page, /URL\.createObjectURL/);
+  assert.match(page, /Pases asignados/);
+  assert.match(page, /Movimientos recientes/);
+  assert.match(page, /\^\[=\+\\-@\]/);
+});
+
+test("asigna invitaciones externas a clientes sin copiar su diseño", async () => {
+  const [admin, dashboard, platform, login, migration] = await Promise.all([
+    read("src/pages/AdminPage.jsx"),
+    read("src/pages/DashboardPage.jsx"),
+    read("src/services/demoPlatformService.js"),
+    read("src/pages/LoginPage.jsx"),
+    read("supabase/migrations/202608200004_external_invitation_url.sql")
+  ]);
+  assert.match(admin, /invitationUrl/);
+  assert.match(admin, /URL pública de la invitación/);
+  assert.match(admin, /Administrar/);
+  assert.match(admin, /Paquete de \{selectedProject\.name\}/);
+  assert.match(dashboard, /event\.invitation_url/);
+  assert.match(platform, /prueba-invitacionxv\.netlify\.app/);
+  assert.match(platform, /rcm-demo-active-project/);
+  assert.match(platform, /updateDemoProject/);
+  assert.match(login, /getDemoLoginAccounts/);
+  assert.match(platform, /Cliente \$\{project\.name\}/);
+  assert.match(migration, /add column if not exists invitation_url/);
+  assert.match(migration, /\^https\?\:\/\//);
+});
+
+test("respeta el modo demo explícito y muestra los accesos vigentes", async () => {
+  const [supabaseService, auth, login, platform] = await Promise.all([
+    read("src/services/supabase.js"),
+    read("src/hooks/useAuth.jsx"),
+    read("src/pages/LoginPage.jsx"),
+    read("src/services/demoPlatformService.js")
+  ]);
+  assert.match(supabaseService, /demoModeSetting === "true"/);
+  assert.match(supabaseService, /demoModeSetting !== "false" && !isSupabaseConfigured/);
+  assert.match(auth, /Para usar las cuentas de muestra, activa VITE_DEMO_MODE=true/);
+  assert.match(login, /demoAccounts\.map/);
+  assert.match(platform, /return example \? \{ \.\.\.example, \.\.\.project \} : project/);
+  assert.match(platform, /client: \{ \.\.\.initialState\.client, \.\.\.\(saved\.client \|\| \{\}\) \}/);
+  assert.match(platform, /project\.clientEmail\?\.trim\(\)\.toLowerCase\(\)/);
+});
+
+test("aplica la paleta de boda únicamente a Dulce y Eduardo", async () => {
+  const [template, theme, album, demoData, seed] = await Promise.all([
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("src/styles/dulce-eduardo-theme.css"),
+    read("src/components/invitation/CollaborativeAlbum.jsx"),
+    read("src/data/demoData.js"),
+    read("supabase/seed.sql")
+  ]);
+  assert.match(template, /event\.slug === "dulce-eduardo" \? "theme-dulce-eduardo" : ""/);
+  for (const color of ["#3a381e", "#847400", "#f6a300", "#e44f00", "#661400"]) assert.match(theme, new RegExp(color));
+  assert.match(theme, /\.theme-dulce-eduardo \.welcome/);
+  assert.match(theme, /\.theme-dulce-eduardo \.invitation-footer/);
+  assert.match(theme, /dulce-eduardo-historia-01\.jpg/);
+  assert.match(theme, /dulce-eduardo-sobre\.jpg/);
+  assert.match(theme, /background-position|center bottom\/100% auto/);
+  for (const detail of ["Templo Hospitalito", "Salón Casa de Adobe", "Entrada de los novios", "Vals de los novios", "Fin de la fiesta"]) {
+    assert.match(demoData, new RegExp(detail));
+    assert.match(seed, new RegExp(detail));
+  }
+  for (let index = 1; index <= 5; index += 1) {
+    const photo = `dulce-eduardo-historia-0${index}\\.jpg`;
+    assert.match(demoData, new RegExp(photo));
+    assert.match(seed, new RegExp(photo));
+  }
+  assert.match(album, /event\.slug === "dulce-eduardo"/);
 });

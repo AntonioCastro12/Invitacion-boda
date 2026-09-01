@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getMyEvent } from "../services/eventService";
+import { subscribeDemoPlatform } from "../services/demoPlatformService";
+import { isDemoMode } from "../services/supabase";
 
 export function useEvent() {
   const [event, setEvent] = useState(null);
@@ -19,5 +21,9 @@ export function useEvent() {
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    if (!isDemoMode) return undefined;
+    return subscribeDemoPlatform(() => refresh());
+  }, [refresh]);
   return { event, loading, error, refresh, setEvent };
 }

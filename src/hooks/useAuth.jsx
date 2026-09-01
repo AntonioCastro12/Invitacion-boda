@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { demoProfile } from "../data/demoData";
+import { authenticateDemoAccount, clearDemoActiveProject } from "../services/demoPlatformService";
 import { isDemoMode, supabase } from "../services/supabase";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(isDemoMode ? null : undefined);
+  const [session, setSession] = useState(isDemoMode || !supabase ? null : undefined);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (isDemoMode) {
-      setProfile(session ? demoProfile : null);
+      setProfile(session?.profile || null);
       return;
     }
     if (!session?.user || !supabase) {
@@ -34,16 +34,19 @@ export function AuthProvider({ children }) {
   async function signIn(email, password) {
     if (isDemoMode) {
       if (!email || !password) throw new Error("Escribe un correo y una contraseña para entrar a la demostración.");
-      setSession({ user: { id: demoProfile.id, email } });
-      return;
+      const nextProfile = authenticateDemoAccount(email, password);
+      setSession({ user: { id: nextProfile.id, email: nextProfile.email }, profile: nextProfile });
+      return nextProfile;
     }
+    if (!supabase) throw new Error("El acceso real necesita las variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY. Para usar las cuentas de muestra, activa VITE_DEMO_MODE=true.");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    return null;
   }
 
   async function signOut() {
-    if (isDemoMode) setSession(null);
-    else await supabase.auth.signOut();
+    if (isDemoMode) { clearDemoActiveProject(); setSession(null); }
+    else if (supabase) await supabase.auth.signOut();
   }
 
   const value = useMemo(() => ({ session, profile, loading: session === undefined, signIn, signOut, isDemoMode }), [session, profile]);

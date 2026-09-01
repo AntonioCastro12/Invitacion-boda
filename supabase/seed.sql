@@ -19,14 +19,14 @@ begin
     reception_name, reception_address, reception_lat, reception_lng, music_url,
     itinerary, gift_registry
   ) values (
-    event_uuid, client_uuid, 'Dulce & Eduardo', 'dulce-eduardo', 'Boda', '2026-10-10', '17:00',
+    event_uuid, client_uuid, 'Dulce & Eduardo', 'dulce-eduardo', 'Boda', '2026-10-10', '14:00',
     'elegante', 'elegante-clasica',
-    '{"gallery":["/images/pareja-1.jpg","/images/pareja-2.jpg","/images/pareja-3.jpg","/images/pareja-4.jpg","/images/pareja-5.jpg"],"video_url":"/video/nuestra-historia.mp4","video_poster":"/images/pareja-3.jpg","ceremony_image":"/images/pareja-3.jpg","reception_image":"/images/pareja-5.jpg","dress_code":{"title":"Formal"},"bank":{"bank":"Banco Nacional","holder":"Dulce & Eduardo","clabe":"000 000 0000000000 0"}}'::jsonb,
-    900, '5214623105704', 'Templo de San Francisco',
-    'Centro histórico, Guanajuato, Gto.', 21.01858, -101.25736,
-    'Hacienda San José Lavista', 'Camino a San José, Guanajuato, Gto.', 20.98718, -101.28054,
+    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_url":"/video/nuestra-historia.mp4","video_poster":"/images/dulce-eduardo-historia-02.jpg","ceremony_image":"/images/dulce-eduardo-historia-04.jpg","reception_image":"/images/dulce-eduardo-historia-03.jpg","dress_code":{"title":"Formal"},"bank":{"bank":"Banco Nacional","holder":"Dulce & Eduardo","clabe":"000 000 0000000000 0"}}'::jsonb,
+    900, '5214623105704', 'Templo Hospitalito',
+    'Misa · 2:00 p. m.', null, null,
+    'Salón Casa de Adobe', 'Recepción · 4:00 p. m.', null, null,
     '/audio/boda.mp3',
-    '[{"time":"5:00 PM","title":"Ceremonia","description":"Templo de San Francisco"},{"time":"7:00 PM","title":"Recepción","description":"Hacienda San José Lavista"},{"time":"8:00 PM","title":"Cena","description":"Compartamos la mesa"},{"time":"9:00 PM","title":"Celebración","description":"¡A disfrutar juntos!"}]'::jsonb,
+    '[{"time":"2:00 PM","title":"Misa","description":"Templo Hospitalito"},{"time":"4:00 PM","title":"Recepción","description":"Salón Casa de Adobe"},{"time":"5:00 PM","title":"Entrada de los novios","description":"Comienza nuestra celebración"},{"time":"5:15 PM","title":"Comida","description":"Compartamos la mesa"},{"time":"6:30 PM","title":"Vals de los novios","description":"Nuestro primer baile"},{"time":"7:00 PM","title":"Baile","description":"¡A celebrar juntos!"},{"time":"12:00 AM","title":"Fin de la fiesta","description":"Gracias por acompañarnos"}]'::jsonb,
     '[{"name":"Liverpool","url":"https://www.liverpool.com.mx/tienda/home"},{"name":"Amazon","url":"https://www.amazon.com.mx/registries"}]'::jsonb
   ) on conflict (id) do update set
     client_id = excluded.client_id,

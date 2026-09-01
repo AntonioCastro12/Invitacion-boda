@@ -8,6 +8,10 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import GuestsPage from "./pages/GuestsPage";
 import EventSettingsPage from "./pages/EventSettingsPage";
+import ConfirmationsPage from "./pages/ConfirmationsPage";
+import PanelAlbumPage from "./pages/PanelAlbumPage";
+import CheckInPage from "./pages/CheckInPage";
+import StatisticsPage from "./pages/StatisticsPage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -22,6 +26,10 @@ export default function App() {
         <Route path="/panel" element={<PanelLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="invitados" element={<GuestsPage />} />
+          <Route path="confirmaciones" element={<ConfirmationsPage />} />
+          <Route path="album" element={<PanelAlbumPage />} />
+          <Route path="acceso" element={<CheckInPage />} />
+          <Route path="estadisticas" element={<StatisticsPage />} />
           <Route path="configuracion" element={<EventSettingsPage />} />
         </Route>
         <Route path="/admin" element={<AdminPage />} />

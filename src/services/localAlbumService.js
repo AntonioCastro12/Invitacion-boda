@@ -1,7 +1,6 @@
 const DATABASE_NAME = "rcm-invitaciones-local";
 const DATABASE_VERSION = 1;
 const STORE_NAME = "album_photos";
-const MAX_PHOTOS = 30;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 function openDatabase() {
@@ -44,8 +43,6 @@ export async function saveLocalPhotos(albumKey, files, author) {
   const images = Array.from(files);
   if (!images.length) return [];
   if (images.some((file) => !file.type.startsWith("image/") || file.size > MAX_FILE_SIZE)) throw new Error("Cada archivo debe ser una imagen de máximo 10 MB.");
-  const current = await listLocalPhotos(albumKey);
-  if (current.length + images.length > MAX_PHOTOS) throw new Error(`Este álbum local admite hasta ${MAX_PHOTOS} fotografías.`);
   const records = images.map((file) => ({ id: crypto.randomUUID(), albumKey, author, name: file.name, type: file.type, size: file.size, createdAt: new Date().toISOString(), blob: file }));
   const database = await openDatabase();
   const transaction = database.transaction(STORE_NAME, "readwrite");
@@ -64,4 +61,4 @@ export async function deleteLocalPhoto(photoId) {
   database.close();
 }
 
-export const localAlbumLimits = { maxPhotos: MAX_PHOTOS, maxFileSize: MAX_FILE_SIZE };
+export const localAlbumLimits = { maxPhotos: null, maxFileSize: MAX_FILE_SIZE };

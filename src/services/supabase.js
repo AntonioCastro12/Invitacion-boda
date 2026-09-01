@@ -2,9 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+const demoModeSetting = import.meta.env.VITE_DEMO_MODE?.trim().toLowerCase();
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
-export const isDemoMode = import.meta.env.VITE_DEMO_MODE !== "false" && !isSupabaseConfigured;
+export const isDemoMode = demoModeSetting === "true" || (demoModeSetting !== "false" && !isSupabaseConfigured);
 
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey, {

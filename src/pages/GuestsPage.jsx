@@ -1,13 +1,15 @@
-import { Plus, Search } from "lucide-react";
+import { MessageCircle, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import GuestForm from "../admin/GuestForm";
 import GuestTable from "../admin/GuestTable";
+import BulkWhatsAppModal from "../admin/BulkWhatsAppModal";
 import { useEvent } from "../hooks/useEvent";
 import { createGuest, deleteGuest, listGuests, updateGuest } from "../services/guestService";
 
 export default function GuestsPage() {
   const { event, loading: eventLoading } = useEvent();
-  const [guests, setGuests] = useState([]); const [query, setQuery] = useState(""); const [editing, setEditing] = useState(undefined); const [formOpen, setFormOpen] = useState(false); const [saving, setSaving] = useState(false); const [notice, setNotice] = useState("");
+  const [guests, setGuests] = useState([]); const [query, setQuery] = useState(""); const [editing, setEditing] = useState(undefined); const [formOpen, setFormOpen] = useState(false); const [bulkOpen, setBulkOpen] = useState(false); const [saving, setSaving] = useState(false); const [notice, setNotice] = useState("");
   const load = useCallback(async () => { if (event) setGuests(await listGuests(event.id)); }, [event]);
   useEffect(() => { load().catch((e) => setNotice(e.message)); }, [load]);
   const filtered = useMemo(() => guests.filter((g) => `${g.name} ${g.phone} ${g.code}`.toLowerCase().includes(query.toLowerCase())), [guests, query]);
@@ -16,5 +18,6 @@ export default function GuestsPage() {
   async function remove(guest) { if (!window.confirm(`¿Eliminar la invitación de ${guest.name}?`)) return; try { await deleteGuest(guest.id); await load(); showNotice("Invitado eliminado."); } catch (e) { showNotice(e.message); } }
   async function copy(url) { await navigator.clipboard.writeText(url); showNotice("Enlace copiado correctamente."); }
   if (eventLoading || !event) return <div className="panel-loading">Cargando invitados…</div>;
-  return <section><header className="page-header"><div><span className="page-eyebrow">Gestión</span><h1>Invitados</h1><p>Administra familias, pases y enlaces personalizados.</p></div><button className="button button--gold" type="button" onClick={() => { setEditing(undefined); setFormOpen(true); }}><Plus size={18} /> Agregar invitado</button></header>{notice && <div className="toast" role="status">{notice}</div>}<div className="toolbar"><label className="search-box"><Search size={18} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nombre, teléfono o código…" /></label><span>{filtered.length} de {guests.length} invitados</span></div><GuestTable event={event} guests={filtered} onEdit={(guest) => { setEditing(guest); setFormOpen(true); }} onDelete={remove} onCopy={copy} />{formOpen && <GuestForm guest={editing} onSave={save} onClose={() => setFormOpen(false)} saving={saving} />}</section>;
+  if (!event.features?.admin_panel) return <section className="locked-feature"><span>Función no incluida</span><h1>Gestión de invitados</h1><p>El panel administrativo se activa a partir del paquete Premium Plus o como servicio adicional.</p><Link className="button button--dark" to="/panel">Volver al dashboard</Link></section>;
+  return <section><header className="page-header"><div><span className="page-eyebrow">Gestión</span><h1>Invitados</h1><p>Administra familias, pases y enlaces personalizados.</p></div><div className="page-header__actions"><button className="button button--light" type="button" onClick={() => setBulkOpen(true)} disabled={!guests.length}><MessageCircle size={18} /> Enviar a todos</button><button className="button button--gold" type="button" onClick={() => { setEditing(undefined); setFormOpen(true); }}><Plus size={18} /> Agregar invitado</button></div></header>{notice && <div className="toast" role="status">{notice}</div>}<div className="toolbar"><label className="search-box"><Search size={18} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nombre, teléfono o código…" /></label><span>{filtered.length} de {guests.length} invitados</span></div><GuestTable event={event} guests={filtered} onEdit={(guest) => { setEditing(guest); setFormOpen(true); }} onDelete={remove} onCopy={copy} />{formOpen && <GuestForm guest={editing} onSave={save} onClose={() => setFormOpen(false)} saving={saving} />}{bulkOpen && <BulkWhatsAppModal event={event} guests={guests} onClose={() => setBulkOpen(false)} />}</section>;
 }
