@@ -30,7 +30,23 @@ begin
     '[{"name":"Liverpool","url":"https://www.liverpool.com.mx/tienda/home"},{"name":"Amazon","url":"https://www.amazon.com.mx/registries"}]'::jsonb
   ) on conflict (id) do update set
     client_id = excluded.client_id,
+    name = excluded.name,
+    slug = excluded.slug,
+    event_date = excluded.event_date,
+    event_time = excluded.event_time,
+    template_key = excluded.template_key,
+    template_config = excluded.template_config,
     whatsapp = excluded.whatsapp,
+    ceremony_name = excluded.ceremony_name,
+    ceremony_address = excluded.ceremony_address,
+    ceremony_lat = excluded.ceremony_lat,
+    ceremony_lng = excluded.ceremony_lng,
+    reception_name = excluded.reception_name,
+    reception_address = excluded.reception_address,
+    reception_lat = excluded.reception_lat,
+    reception_lng = excluded.reception_lng,
+    itinerary = excluded.itinerary,
+    gift_registry = excluded.gift_registry,
     updated_at = now();
 
   insert into public.guests (event_id, name, phone, passes, code, table_name, notes) values
@@ -40,4 +56,15 @@ begin
     (event_uuid, 'José Ramírez', '524621334455', 1, 'F4M67', 'Mesa 7', null)
   on conflict (code) do update set name = excluded.name, phone = excluded.phone,
     passes = excluded.passes, table_name = excluded.table_name, notes = excluded.notes;
+
+  insert into public.event_entitlements (event_id, plan_key, feature_overrides)
+  values (
+    event_uuid,
+    'elegante-900',
+    '{"admin_panel":true,"guest_database":true,"form_rsvp":true,"database_rsvp":true,"confirmation_statuses":true,"pass_count":true,"confirmation_panel":true,"personalized_passes":true,"individual_qr":true,"collaborative_album":true,"statistics":true}'::jsonb
+  )
+  on conflict (event_id) do update set
+    plan_key = excluded.plan_key,
+    feature_overrides = public.event_entitlements.feature_overrides || excluded.feature_overrides,
+    updated_at = now();
 end $$;

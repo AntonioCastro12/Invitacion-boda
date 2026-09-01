@@ -278,4 +278,6 @@ test("aplica la paleta de boda únicamente a Dulce y Eduardo", async () => {
     assert.match(seed, new RegExp(photo));
   }
   assert.match(album, /event\.slug === "dulce-eduardo"/);
+  assert.match(seed, /"admin_panel":true/);
+  assert.match(seed, /insert into public\.event_entitlements/);
 });

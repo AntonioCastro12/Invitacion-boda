@@ -4,13 +4,26 @@ import { getPackage, resolvePackage } from "../data/packageCatalog";
 const STORAGE_KEY = "rcm-demo-platform-v1";
 const CHANGE_EVENT = "rcm-demo-platform-change";
 const DEMO_ADMIN_ACCOUNT = { id: "demo-admin", label: "Administrador RCM", email: "admin@rcminvitaciones.com", password: "admin2026", role: "super_admin" };
+const DULCE_MANAGEMENT_FEATURES = {
+  admin_panel: true,
+  guest_database: true,
+  form_rsvp: true,
+  database_rsvp: true,
+  confirmation_statuses: true,
+  pass_count: true,
+  confirmation_panel: true,
+  personalized_passes: true,
+  individual_qr: true,
+  collaborative_album: true,
+  statistics: true
+};
 
 const initialState = {
   packageKey: "elegante-900",
-  featureOverrides: {},
+  featureOverrides: DULCE_MANAGEMENT_FEATURES,
   eventOverrides: {},
   projects: [
-    { id: demoEvent.id, name: "Dulce & Eduardo", slug: "dulce-eduardo", eventType: "Boda", date: "2026-10-10", clientName: "Dulce y Eduardo", clientEmail: "demo@rcminvitaciones.com", clientPassword: "demostracion", packageKey: "elegante-900", status: "published", designKey: "elegante-clasica", invitationUrl: "" },
+    { id: demoEvent.id, name: "Dulce & Eduardo", slug: "dulce-eduardo", eventType: "Boda", date: "2026-10-10", clientName: "Dulce y Eduardo", clientEmail: "demo@rcminvitaciones.com", clientPassword: "demostracion", packageKey: "elegante-900", featureOverrides: DULCE_MANAGEMENT_FEATURES, status: "published", designKey: "elegante-clasica", invitationUrl: "/evento/dulce-eduardo/A7X92" },
     { id: "22222222-2222-4222-8222-222222222222", name: "Valentina Isabella", slug: "valentina-isabella", eventType: "XV años", date: "2026-10-18", clientName: "Valentina y familia", clientEmail: "valentina@rcminvitaciones.com", clientPassword: "valentina2026", packageKey: "vip-5000", status: "published", designKey: "enlace-externo", invitationUrl: "https://prueba-invitacionxv.netlify.app/" }
   ],
   client: {
@@ -30,7 +43,20 @@ function readState() {
       return example ? { ...example, ...project } : project;
     });
     for (const example of initialState.projects) if (!projects.some((project) => project.id === example.id || project.slug === example.slug)) projects.push(example);
-    return { ...initialState, ...saved, client: { ...initialState.client, ...(saved.client || {}) }, projects };
+    const primary = projects.find((project) => project.id === demoEvent.id || project.slug === demoEvent.slug);
+    if (primary) {
+      primary.status = "published";
+      primary.designKey = "elegante-clasica";
+      primary.invitationUrl = "/evento/dulce-eduardo/A7X92";
+      primary.featureOverrides = { ...DULCE_MANAGEMENT_FEATURES, ...(primary.featureOverrides || {}) };
+    }
+    return {
+      ...initialState,
+      ...saved,
+      client: { ...initialState.client, ...(saved.client || {}) },
+      featureOverrides: { ...DULCE_MANAGEMENT_FEATURES, ...(saved.featureOverrides || {}) },
+      projects
+    };
   } catch {
     return initialState;
   }
