@@ -1,0 +1,226 @@
+/* RCM visual polish: refined vectors, interactive surfaces and motion. */
+:root {
+  --ease-elegant: cubic-bezier(.16, 1, .3, 1);
+  --focus-ring: 0 0 0 4px rgba(184, 154, 98, .2);
+  --button-shadow: 0 10px 24px rgba(38, 53, 44, .14), inset 0 1px rgba(255, 255, 255, .2);
+}
+
+.button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 48px;
+  border-radius: 14px;
+  padding: .82rem 1.28rem;
+  box-shadow: 0 1px 2px rgba(30, 42, 35, .04);
+  transition: transform .35s var(--ease-elegant), box-shadow .35s var(--ease-elegant), border-color .35s ease, background-color .35s ease, color .35s ease;
+}
+
+.button::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(112deg, transparent 20%, rgba(255,255,255,.3) 46%, transparent 72%);
+  transform: translateX(-125%);
+  transition: transform .7s var(--ease-elegant);
+}
+
+.button:hover {
+  filter: none;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(38, 53, 44, .16), inset 0 1px rgba(255,255,255,.24);
+}
+
+.button:hover::before { transform: translateX(125%); }
+.button:active { transform: translateY(-1px) scale(.985); transition-duration: .12s; }
+.button:focus-visible { outline: 0; box-shadow: var(--focus-ring), var(--button-shadow); }
+.button:disabled { transform: none; box-shadow: none; }
+.button svg { flex: 0 0 auto; stroke-width: 1.7; transition: transform .35s var(--ease-elegant); }
+.button:hover svg { transform: translateX(2px) scale(1.04); }
+.button--gold { background: linear-gradient(135deg, #c4a66e, #a98243); box-shadow: 0 11px 26px rgba(169, 130, 67, .26); }
+.button--dark { background: linear-gradient(135deg, #31463a, #1e2d25); box-shadow: 0 11px 26px rgba(30, 45, 37, .22); }
+.button--olive { background: linear-gradient(135deg, #687b61, #465743); box-shadow: 0 11px 26px rgba(70, 87, 67, .22); }
+.button--light { border-color: rgba(74, 91, 80, .16); background: rgba(255,255,255,.88); backdrop-filter: blur(10px); }
+.button--light:hover { border-color: rgba(184,154,98,.52); color: var(--olive); }
+.button--outline { border-color: rgba(184,154,98,.5); background: rgba(255,255,255,.28); backdrop-filter: blur(8px); }
+
+/* Fine-line icon medallions replace loose generic vectors. */
+.invitation-section > .section-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 1.35rem;
+  padding: 15px;
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.96), rgba(255,255,255,.46));
+  box-shadow: 0 12px 30px rgba(87,71,39,.11), 0 0 0 7px color-mix(in srgb, var(--gold) 7%, transparent);
+  stroke-width: 1.25;
+  filter: drop-shadow(0 3px 5px rgba(87,71,39,.08));
+  animation: icon-breathe 5s ease-in-out infinite;
+}
+
+.invitation-section > .section-intro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .8rem;
+}
+
+.invitation-section > .section-intro::before,
+.invitation-section > .section-intro::after {
+  width: 30px;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, currentColor);
+  opacity: .55;
+}
+
+.invitation-section > .section-intro::after { transform: scaleX(-1); }
+
+.timeline-icon,
+.dress-options article > svg,
+.album-access-card__copy > svg {
+  stroke-width: 1.35;
+  transition: transform .45s var(--ease-elegant), box-shadow .45s var(--ease-elegant), color .3s ease;
+}
+
+.timeline article:hover .timeline-icon { transform: translateY(-3px) rotate(-3deg); box-shadow: 0 12px 26px rgba(84,70,43,.14); }
+
+.location-card,
+.calendar-card,
+.classic-pass,
+.rsvp-form,
+.gift-store,
+.album-access-card,
+.dress-options article {
+  transition: transform .5s var(--ease-elegant), box-shadow .5s var(--ease-elegant), border-color .4s ease;
+}
+
+.location-card:hover,
+.calendar-card:hover,
+.classic-pass:hover,
+.rsvp-form:hover,
+.album-access-card:hover,
+.dress-options article:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--gold) 45%, transparent);
+  box-shadow: 0 22px 48px rgba(57,52,37,.12);
+}
+
+.gift-store:hover { transform: translateY(-3px) scale(1.015); box-shadow: 0 12px 25px rgba(57,52,37,.1); }
+.story-carousel__arrow { transition: transform .35s var(--ease-elegant), background .3s ease, box-shadow .35s ease; }
+.story-carousel__arrow:hover { transform: translateY(-50%) scale(1.09); box-shadow: 0 9px 24px rgba(30,27,19,.2); }
+.story-carousel__dots button { transition: width .4s var(--ease-elegant), transform .3s ease, background .3s ease; }
+.story-carousel__dots button:hover { transform: scale(1.25); }
+.music-button { transition: transform .4s var(--ease-elegant), box-shadow .4s ease; animation: music-pulse 3.2s ease-in-out infinite; }
+.music-button:hover { transform: translateY(-3px) rotate(6deg); }
+
+.rsvp-form input:not([type="radio"]),
+.rsvp-form select,
+.rsvp-form textarea,
+.auth-form input,
+.settings-card input,
+.settings-card select,
+.new-project-form input,
+.new-project-form select {
+  transition: border-color .3s ease, box-shadow .3s ease, transform .3s var(--ease-elegant), background .3s ease;
+}
+
+.rsvp-form input:not([type="radio"]):focus,
+.rsvp-form select:focus,
+.rsvp-form textarea:focus,
+.auth-form input:focus,
+.settings-card input:focus,
+.settings-card select:focus,
+.new-project-form input:focus,
+.new-project-form select:focus {
+  outline: 0;
+  transform: translateY(-1px);
+  border-color: var(--gold);
+  box-shadow: var(--focus-ring);
+}
+
+/* Decorative vector layer remains subtle and never blocks interaction. */
+.elegant-ornaments { position: fixed; z-index: 4; inset: 0; width: min(100%, 690px); margin: auto; overflow: hidden; pointer-events: none; }
+.elegant-ornament { position: absolute; display: grid; width: 34px; height: 34px; place-items: center; color: var(--gold); }
+.elegant-ornament svg { width: 100%; height: 100%; stroke-width: .85; }
+.elegant-ornament--one { top: 17%; left: 10px; transform: rotate(-28deg); }
+.elegant-ornament--two { top: 38%; right: 12px; width: 24px; height: 24px; }
+.elegant-ornament--three { top: 64%; left: 14px; width: 22px; height: 22px; }
+.elegant-ornament--four { top: 82%; right: 8px; transform: rotate(22deg); }
+
+/* SaaS panel motion and tactile feedback. */
+.panel-content > section,
+.admin-hero,
+.admin-overview,
+.admin-section { animation: ui-rise .72s var(--ease-elegant) both; }
+.admin-overview { animation-delay: .08s; }
+.admin-section:nth-of-type(2) { animation-delay: .12s; }
+.admin-section:nth-of-type(3) { animation-delay: .18s; }
+.stats-grid article,
+.admin-overview article,
+.confirmation-stats article,
+.admin-projects > article,
+.client-services article,
+.guest-table tr {
+  transition: transform .4s var(--ease-elegant), box-shadow .4s var(--ease-elegant), border-color .3s ease;
+}
+.stats-grid article:hover,
+.admin-overview article:hover,
+.confirmation-stats article:hover,
+.admin-projects > article:hover,
+.client-services article:hover,
+.guest-table tr:hover {
+  transform: translateY(-4px);
+  border-color: rgba(184,154,98,.35);
+  box-shadow: 0 16px 34px rgba(35,49,40,.09);
+}
+.stats-grid article > span,
+.admin-section > header > div > span,
+.confirmation-stats article > svg,
+.admin-overview article > svg {
+  transition: transform .45s var(--ease-elegant), background .35s ease;
+}
+.stats-grid article:hover > span,
+.admin-section:hover > header > div > span,
+.confirmation-stats article:hover > svg,
+.admin-overview article:hover > svg { transform: rotate(-5deg) scale(1.08); }
+.action-row a,
+.action-row button,
+.panel-album-grid button { transition: transform .3s var(--ease-elegant), background .3s ease, color .3s ease, box-shadow .3s ease; }
+.action-row a:hover,
+.action-row button:hover,
+.panel-album-grid button:hover { transform: translateY(-2px) scale(1.06); background: #fff8e9; box-shadow: 0 8px 18px rgba(45,61,51,.1); }
+.sidebar nav a,
+.sidebar-logout { position: relative; overflow: hidden; transition: transform .3s var(--ease-elegant), background .3s ease, color .3s ease; }
+.sidebar nav a:hover { transform: translateX(4px); }
+.feature-switches label:hover { transform: translateY(-2px); border-color: rgba(184,154,98,.42); box-shadow: 0 10px 24px rgba(35,49,40,.06); }
+.feature-switches label,
+.feature-switches i { transition: transform .35s var(--ease-elegant), border-color .3s ease, background .3s ease, box-shadow .3s ease; }
+.modal { animation: modal-enter .45s var(--ease-elegant) both; }
+.toast { animation: toast-enter .45s var(--ease-elegant) both; }
+
+.theme-dulce-eduardo .button.button--gold { background: linear-gradient(135deg, #f06b1d, #bd3500); }
+.theme-dulce-eduardo .button.button--olive { background: linear-gradient(135deg, #514d29, #282713); }
+.theme-dulce-eduardo .invitation-section > .section-icon { background: radial-gradient(circle at 35% 28%, #fffdf7, #f4dfb8); }
+.theme-dulce-eduardo .elegant-ornament { color: #f6a300; filter: drop-shadow(0 2px 5px rgba(102,20,0,.18)); }
+
+@keyframes icon-breathe { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(2deg); } }
+@keyframes music-pulse { 0%,100% { box-shadow: 0 9px 28px rgba(40,45,35,.25), 0 0 0 0 rgba(184,154,98,.18); } 50% { box-shadow: 0 12px 32px rgba(40,45,35,.3), 0 0 0 9px rgba(184,154,98,0); } }
+@keyframes ui-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes modal-enter { from { opacity: 0; transform: translateY(18px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes toast-enter { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+@media (max-width: 700px) {
+  .button { min-height: 50px; border-radius: 13px; }
+  .elegant-ornaments { width: 100%; }
+  .elegant-ornament--one, .elegant-ornament--four { opacity: .18 !important; }
+  .elegant-ornament--two, .elegant-ornament--three { display: none; }
+  .location-card:hover, .calendar-card:hover, .classic-pass:hover, .rsvp-form:hover, .album-access-card:hover, .dress-options article:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

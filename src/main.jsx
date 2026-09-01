@@ -5,6 +5,7 @@ import { AuthProvider } from "./hooks/useAuth";
 import App from "./App";
 import "./styles/global.css";
 import "./styles/extensions.css";
+import "./styles/ui-polish.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

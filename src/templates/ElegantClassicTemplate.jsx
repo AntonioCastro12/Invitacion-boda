@@ -4,6 +4,7 @@ import CalendarSection from "../components/invitation/CalendarSection";
 import CollaborativeAlbum from "../components/invitation/CollaborativeAlbum";
 import Countdown from "../components/invitation/Countdown";
 import DressCode from "../components/invitation/DressCode";
+import ElegantOrnaments from "../components/invitation/ElegantOrnaments";
 import FinalMessage from "../components/invitation/FinalMessage";
 import Footer from "../components/invitation/Footer";
 import GiftRegistry from "../components/invitation/GiftRegistry";
@@ -51,6 +52,7 @@ export default function ElegantClassicTemplate({ event, guest }) {
     <div className={`invitation-page template-elegante-clasica ${invitationTheme}`}>
       {features.music && <audio ref={audioRef} src={event.music_url} loop preload="metadata" />}
       <AnimatePresence>{features.animated_cover && !opened && <WelcomeScreen event={event} onOpen={openInvitation} />}</AnimatePresence>
+      {opened && <ElegantOrnaments />}
       {opened && features.music && <MusicPlayer playing={playing} onToggle={toggleMusic} />}
       <motion.main className="invitation-canvas" initial={false} animate={opened ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0, filter: "blur(5px)" }} aria-hidden={!opened}>
         <Hero event={event} opened={opened} />

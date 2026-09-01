@@ -57,6 +57,21 @@ test("la plantilla clásica conserva todas las secciones de demostración", asyn
   assert.match(template, /event\.template_config/);
 });
 
+test("aplica un sistema visual elegante con vectores y movimiento accesible", async () => {
+  const [template, ornaments, reveal, styles] = await Promise.all([
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("src/components/invitation/ElegantOrnaments.jsx"),
+    read("src/components/invitation/SectionReveal.jsx"),
+    read("src/styles/ui-polish.css")
+  ]);
+  assert.match(template, /ElegantOrnaments/);
+  assert.match(ornaments, /useReducedMotion/);
+  assert.match(reveal, /filter: "blur\(7px\)"/);
+  assert.match(styles, /\.button::before/);
+  assert.match(styles, /\.invitation-section > \.section-icon/);
+  assert.match(styles, /prefers-reduced-motion/);
+});
+
 test("nuestra historia funciona como carrusel táctil", async () => {
   const gallery = await read("src/components/invitation/StoryGallery.jsx");
   assert.match(gallery, /story-carousel/);
