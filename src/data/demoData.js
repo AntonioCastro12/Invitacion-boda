@@ -55,7 +55,12 @@ export const demoEvent = {
     },
   ],
   gift_registry: [
-    { name: "Liverpool", code: "POR CONFIRMAR" },
+    {
+      name: "Liverpool",
+      code: "60033184",
+      url: "https://mesaderegalos.liverpool.com.mx/milistaderegalos/60033184",
+    },
+    { name: "Amazon", url: "https://www.amazon.com.mx/wedding/guest-view/1BDWDEA7A44XE" },
   ],
 };
 

@@ -27,7 +27,7 @@ begin
     'Salón Casa de Adobe', 'Recepción · 4:00 p. m.', null, null,
     '/audio/boda.mp3',
     '[{"time":"2:00 PM","title":"Misa","description":"Templo Hospitalito"},{"time":"4:00 PM","title":"Recepción","description":"Salón Casa de Adobe"},{"time":"5:00 PM","title":"Entrada de los novios","description":"Comienza nuestra celebración"},{"time":"5:15 PM","title":"Comida","description":"Compartamos la mesa"},{"time":"6:30 PM","title":"Vals de los novios","description":"Nuestro primer baile"},{"time":"7:00 PM","title":"Baile","description":"¡A celebrar juntos!"},{"time":"12:00 AM","title":"Fin de la fiesta","description":"Gracias por acompañarnos"}]'::jsonb,
-    '[{"name":"Liverpool","code":"POR CONFIRMAR"}]'::jsonb
+    '[{"name":"Liverpool","code":"60033184","url":"https://mesaderegalos.liverpool.com.mx/milistaderegalos/60033184"},{"name":"Amazon","url":"https://www.amazon.com.mx/wedding/guest-view/1BDWDEA7A44XE"}]'::jsonb
   ) on conflict (id) do update set
     client_id = excluded.client_id,
     name = excluded.name,

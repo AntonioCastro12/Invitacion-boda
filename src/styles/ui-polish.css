@@ -110,11 +110,30 @@
 }
 
 .gift-store:hover { transform: translateY(-3px) scale(1.015); box-shadow: 0 12px 25px rgba(57,52,37,.1); }
-.gift-code-card { display: grid; justify-items: center; gap: .55rem; width: min(100%, 340px); padding: 1.4rem; border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); border-radius: 18px; background: rgba(255,255,255,.68); box-shadow: 0 16px 36px rgba(57,52,37,.08); }
-.gift-code-card > svg { color: var(--gold); stroke-width: 1.25; }
-.gift-code-card > span { color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.gift-code-card > strong { font-family: "Cormorant Garamond", serif; color: var(--ink); font-size: clamp(2rem, 8vw, 2.7rem); font-weight: 600; letter-spacing: .12em; }
-.gift-code-card .button { margin-top: .25rem; }
+.gift-registry-grid { display: grid; gap: 1rem; width: min(100%, 430px); margin: 2rem auto 0; }
+.gift-registry-card { --registry-accent: var(--gold); position: relative; overflow: hidden; border: 1px solid color-mix(in srgb, var(--registry-accent) 28%, transparent); border-radius: 24px; background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(255,250,241,.88)); box-shadow: 0 18px 42px rgba(57,52,37,.1); text-align: left; }
+.gift-registry-card::before { position: absolute; inset: 0 auto 0 0; width: 4px; content: ""; background: linear-gradient(180deg, var(--registry-accent), color-mix(in srgb, var(--registry-accent) 38%, white)); }
+.gift-registry-card--liverpool { --registry-accent: #d80778; }
+.gift-registry-card--amazon { --registry-accent: #b66b14; }
+.gift-registry-card__brand { display: flex; align-items: center; gap: .85rem; padding: 1.25rem 1.25rem .9rem; }
+.gift-registry-card__brand > span:last-child { display: grid; gap: .12rem; }
+.gift-registry-card__brand small { color: var(--muted); font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.gift-registry-card__brand strong { color: var(--ink); font-family: "Cormorant Garamond", serif; font-size: 1.65rem; font-weight: 600; line-height: 1; }
+.gift-registry-card__icon { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 1px solid color-mix(in srgb, var(--registry-accent) 30%, transparent); border-radius: 50%; background: color-mix(in srgb, var(--registry-accent) 8%, white); color: var(--registry-accent); }
+.gift-registry-card__icon svg { stroke-width: 1.4; }
+.gift-registry-card__link { display: flex; min-height: 50px; align-items: center; justify-content: center; gap: .55rem; margin: 0 1.25rem 1rem; padding: .75rem 1rem; border-radius: 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--registry-accent) 86%, #2d352e), var(--registry-accent)); box-shadow: 0 10px 22px color-mix(in srgb, var(--registry-accent) 20%, transparent); color: white; font-size: .77rem; font-weight: 800; letter-spacing: .035em; text-decoration: none; transition: transform .35s var(--ease-elegant), box-shadow .35s ease; }
+.gift-registry-card__link:hover { transform: translateY(-2px); box-shadow: 0 14px 28px color-mix(in srgb, var(--registry-accent) 28%, transparent); }
+.gift-code-toggle { display: flex; width: 100%; min-height: 62px; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 1.25rem; border: 0; border-top: 1px solid color-mix(in srgb, var(--registry-accent) 18%, transparent); background: color-mix(in srgb, var(--registry-accent) 4%, white); color: var(--ink); cursor: pointer; text-align: left; }
+.gift-code-toggle > span { display: grid; gap: .12rem; font-size: .76rem; font-weight: 800; }
+.gift-code-toggle small { color: var(--muted); font-size: .59rem; font-weight: 600; letter-spacing: .08em; }
+.gift-code-toggle svg { color: var(--registry-accent); transition: transform .32s var(--ease-elegant); }
+.gift-code-toggle svg.is-open { transform: rotate(180deg); }
+.gift-code-panel { overflow: hidden; background: color-mix(in srgb, var(--registry-accent) 5%, white); }
+.gift-code-panel__inner { display: grid; justify-items: center; gap: .45rem; margin: 0 1.25rem 1.2rem; padding: 1.15rem; border: 1px dashed color-mix(in srgb, var(--registry-accent) 34%, transparent); border-radius: 16px; background: rgba(255,255,255,.75); text-align: center; }
+.gift-code-panel__inner > small { color: var(--muted); font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.gift-code-panel__inner > strong { color: var(--ink); font-family: "Cormorant Garamond", serif; font-size: clamp(2.1rem, 9vw, 2.75rem); font-weight: 600; letter-spacing: .14em; line-height: 1; }
+.gift-code-copy { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: .42rem; margin-top: .25rem; padding: .55rem .9rem; border: 1px solid color-mix(in srgb, var(--registry-accent) 35%, transparent); border-radius: 999px; background: white; color: var(--registry-accent); cursor: pointer; font-size: .69rem; font-weight: 800; transition: transform .25s ease, box-shadow .25s ease; }
+.gift-code-copy:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(57,52,37,.09); }
 .pass-confirmation-section { background: linear-gradient(155deg, color-mix(in srgb, var(--ivory) 88%, white), color-mix(in srgb, var(--champagne) 18%, var(--ivory))); }
 .pass-confirmation-card { width: min(100%, 500px); margin: 2.4rem auto 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent); border-radius: 26px; background: var(--paper); box-shadow: 0 28px 70px rgba(57,52,37,.14); }
 .pass-confirmation-card .classic-pass { max-width: none; margin: 0; border: 0; box-shadow: none; }

@@ -102,10 +102,14 @@ test("personaliza la boda de Eduardo y Dulce con la información corregida", asy
   assert.match(platform, /date: "2026-11-28"/);
   assert.match(welcome, /<i>y<\/i>/);
   assert.match(itinerary, /iconFor\(item\.title\)/);
-  assert.match(gifts, /POR CONFIRMAR/);
+  assert.match(demo, /code: "60033184"/);
+  assert.match(demo, /mesaderegalos\.liverpool\.com\.mx\/milistaderegalos\/60033184/);
+  assert.match(demo, /amazon\.com\.mx\/wedding\/guest-view\/1BDWDEA7A44XE/);
+  assert.match(gifts, /Copiar número/);
+  assert.match(gifts, /Ver número del evento/);
   assert.match(gifts, /hasBankDetails/);
   assert.match(template, /!features\.whatsapp_rsvp/);
-  assert.match(theme, /eduardo-dulce-portada\.png/);
+  assert.match(theme, /dulce-eduardo-historia-01\.jpg/);
   assert.match(theme, /templo-hospitalito/);
 });
 
@@ -317,7 +321,7 @@ test("aplica la paleta de boda únicamente a Dulce y Eduardo", async () => {
   for (const color of ["#3a381e", "#847400", "#f6a300", "#e44f00", "#661400"]) assert.match(theme, new RegExp(color));
   assert.match(theme, /\.theme-dulce-eduardo \.welcome/);
   assert.match(theme, /\.theme-dulce-eduardo \.invitation-footer/);
-  assert.match(theme, /eduardo-dulce-portada\.png/);
+  assert.match(theme, /dulce-eduardo-historia-01\.jpg/);
   assert.match(theme, /dulce-eduardo-sobre\.jpg/);
   assert.match(theme, /background-position|center bottom\/100% auto/);
   for (const detail of ["Templo Hospitalito", "Salón Casa de Adobe", "Entrada de los novios", "Vals de los novios", "Fin de la fiesta"]) {
