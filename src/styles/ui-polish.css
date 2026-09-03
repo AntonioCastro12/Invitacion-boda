@@ -110,6 +110,26 @@
 }
 
 .gift-store:hover { transform: translateY(-3px) scale(1.015); box-shadow: 0 12px 25px rgba(57,52,37,.1); }
+.gift-code-card { display: grid; justify-items: center; gap: .55rem; width: min(100%, 340px); padding: 1.4rem; border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); border-radius: 18px; background: rgba(255,255,255,.68); box-shadow: 0 16px 36px rgba(57,52,37,.08); }
+.gift-code-card > svg { color: var(--gold); stroke-width: 1.25; }
+.gift-code-card > span { color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.gift-code-card > strong { font-family: "Cormorant Garamond", serif; color: var(--ink); font-size: clamp(2rem, 8vw, 2.7rem); font-weight: 600; letter-spacing: .12em; }
+.gift-code-card .button { margin-top: .25rem; }
+.pass-confirmation-section { background: linear-gradient(155deg, color-mix(in srgb, var(--ivory) 88%, white), color-mix(in srgb, var(--champagne) 18%, var(--ivory))); }
+.pass-confirmation-card { width: min(100%, 500px); margin: 2.4rem auto 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent); border-radius: 26px; background: var(--paper); box-shadow: 0 28px 70px rgba(57,52,37,.14); }
+.pass-confirmation-card .classic-pass { max-width: none; margin: 0; border: 0; box-shadow: none; }
+.pass-confirmation-card .classic-pass::before,
+.pass-confirmation-card .classic-pass::after { display: none; }
+.rsvp-section--embedded { position: relative; padding: 2.2rem 1.4rem 1.5rem; border-top: 1px dashed color-mix(in srgb, var(--gold) 52%, transparent); text-align: center; }
+.rsvp-section--embedded::before,
+.rsvp-section--embedded::after { position: absolute; top: -13px; width: 26px; height: 26px; content: ""; border-radius: 50%; background: var(--ivory); }
+.rsvp-section--embedded::before { left: -13px; }
+.rsvp-section--embedded::after { right: -13px; }
+.confirmation-inline-icon { width: 48px; height: 48px; margin-bottom: .8rem; padding: 12px; border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent); border-radius: 50%; color: var(--gold); stroke-width: 1.25; }
+.rsvp-section--embedded h2 { margin: .45rem 0 .65rem; font-family: "Cormorant Garamond", serif; font-size: clamp(2rem, 9vw, 2.55rem); font-weight: 500; }
+.rsvp-section--embedded > p:not(.section-intro) { max-width: 360px; margin: 0 auto 1.3rem; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+.rsvp-section--embedded .rsvp-form { margin: 0; padding: 1.2rem; border: 0; border-radius: 18px; background: color-mix(in srgb, var(--ivory) 68%, white); box-shadow: none; text-align: left; }
+.rsvp-section--embedded .rsvp-form .button { width: 100%; }
 .story-carousel__arrow { transition: transform .35s var(--ease-elegant), background .3s ease, box-shadow .35s ease; }
 .story-carousel__arrow:hover { transform: translateY(-50%) scale(1.09); box-shadow: 0 9px 24px rgba(30,27,19,.2); }
 .story-carousel__dots button { transition: width .4s var(--ease-elegant), transform .3s ease, background .3s ease; }

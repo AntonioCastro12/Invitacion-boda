@@ -13,6 +13,7 @@ import Itinerary from "../components/invitation/Itinerary";
 import Location from "../components/invitation/Location";
 import MusicPlayer from "../components/invitation/MusicPlayer";
 import PersonalizedPass from "../components/invitation/PersonalizedPass";
+import PersonalizedPassConfirmation from "../components/invitation/PersonalizedPassConfirmation";
 import SectionReveal from "../components/invitation/SectionReveal";
 import StoryGallery from "../components/invitation/StoryGallery";
 import WelcomeScreen from "../components/invitation/WelcomeScreen";
@@ -62,9 +63,10 @@ export default function ElegantClassicTemplate({ event, guest }) {
         {features.itinerary && <SectionReveal><Itinerary items={event.itinerary} /></SectionReveal>}
         {features.add_calendar && <SectionReveal><CalendarSection event={event} /></SectionReveal>}
         {features.google_maps && <SectionReveal><section className="invitation-section locations-section"><p className="section-intro">Cómo llegar</p><h2>Nuestros lugares</h2><p>Aquí comienza el camino hacia nuestro sí para siempre.</p><Location title="Ceremonia" name={event.ceremony_name} address={event.ceremony_address} lat={event.ceremony_lat} lng={event.ceremony_lng} image={config.ceremony_image} showWaze={features.maps_waze} /><Location title="Recepción" name={event.reception_name} address={event.reception_address} lat={event.reception_lat} lng={event.reception_lng} image={config.reception_image} showWaze={features.maps_waze} /></section></SectionReveal>}
-        {features.personalized_passes && <SectionReveal><PersonalizedPass guest={guest} event={event} /></SectionReveal>}
-        {features.whatsapp_rsvp && <SectionReveal><WhatsAppConfirmation event={event} guest={guest} /></SectionReveal>}
-        {(features.form_rsvp || features.database_rsvp) && <SectionReveal><RsvpFormDemo event={event} guest={guest} /></SectionReveal>}
+        {features.personalized_passes && features.whatsapp_rsvp && <SectionReveal><PersonalizedPassConfirmation guest={guest} event={event} /></SectionReveal>}
+        {features.personalized_passes && !features.whatsapp_rsvp && <SectionReveal><PersonalizedPass guest={guest} event={event} /></SectionReveal>}
+        {features.whatsapp_rsvp && !features.personalized_passes && <SectionReveal><WhatsAppConfirmation event={event} guest={guest} /></SectionReveal>}
+        {!features.whatsapp_rsvp && (features.form_rsvp || features.database_rsvp) && <SectionReveal><RsvpFormDemo event={event} guest={guest} /></SectionReveal>}
         {features.dress_code && <SectionReveal><DressCode config={config.dress_code} /></SectionReveal>}
         {features.gift_registry && <SectionReveal><GiftRegistry registries={event.gift_registry} bank={config.bank} /></SectionReveal>}
         {features.collaborative_album && <SectionReveal><CollaborativeAlbum event={event} guest={guest} /></SectionReveal>}

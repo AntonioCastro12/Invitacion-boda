@@ -23,11 +23,11 @@ const initialState = {
   featureOverrides: DULCE_MANAGEMENT_FEATURES,
   eventOverrides: {},
   projects: [
-    { id: demoEvent.id, name: "Dulce & Eduardo", slug: "dulce-eduardo", eventType: "Boda", date: "2026-10-10", clientName: "Dulce y Eduardo", clientEmail: "demo@rcminvitaciones.com", clientPassword: "demostracion", packageKey: "elegante-900", featureOverrides: DULCE_MANAGEMENT_FEATURES, status: "published", designKey: "elegante-clasica", invitationUrl: "/evento/dulce-eduardo/A7X92" },
+    { id: demoEvent.id, name: "Eduardo y Dulce", slug: "dulce-eduardo", eventType: "Boda", date: "2026-11-28", clientName: "Eduardo y Dulce", clientEmail: "demo@rcminvitaciones.com", clientPassword: "demostracion", packageKey: "elegante-900", featureOverrides: DULCE_MANAGEMENT_FEATURES, status: "published", designKey: "elegante-clasica", invitationUrl: "/evento/dulce-eduardo/A7X92" },
     { id: "22222222-2222-4222-8222-222222222222", name: "Valentina Isabella", slug: "valentina-isabella", eventType: "XV años", date: "2026-10-18", clientName: "Valentina y familia", clientEmail: "valentina@rcminvitaciones.com", clientPassword: "valentina2026", packageKey: "vip-5000", status: "published", designKey: "enlace-externo", invitationUrl: "https://prueba-invitacionxv.netlify.app/" }
   ],
   client: {
-    nombre: "Dulce y Eduardo",
+    nombre: "Eduardo y Dulce",
     email: "demo@rcminvitaciones.com",
     password: "demostracion"
   }
@@ -45,9 +45,13 @@ function readState() {
     for (const example of initialState.projects) if (!projects.some((project) => project.id === example.id || project.slug === example.slug)) projects.push(example);
     const primary = projects.find((project) => project.id === demoEvent.id || project.slug === demoEvent.slug);
     if (primary) {
+      primary.name = demoEvent.name;
+      primary.slug = demoEvent.slug;
+      primary.date = demoEvent.event_date;
+      primary.clientName = "Eduardo y Dulce";
       primary.status = "published";
       primary.designKey = "elegante-clasica";
-      primary.invitationUrl = "/evento/dulce-eduardo/A7X92";
+      primary.invitationUrl = `/evento/${demoEvent.slug}/A7X92`;
       primary.featureOverrides = { ...DULCE_MANAGEMENT_FEATURES, ...(primary.featureOverrides || {}) };
     }
     return {

@@ -87,6 +87,43 @@ test("usa el WhatsApp configurado para las confirmaciones", async () => {
   assert.match(seed, /'5214623105704'/);
 });
 
+test("personaliza la boda de Eduardo y Dulce con la información corregida", async () => {
+  const [demo, platform, welcome, itinerary, gifts, template, theme] = await Promise.all([
+    read("src/data/demoData.js"),
+    read("src/services/demoPlatformService.js"),
+    read("src/components/invitation/WelcomeScreen.jsx"),
+    read("src/components/invitation/Itinerary.jsx"),
+    read("src/components/invitation/GiftRegistry.jsx"),
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("src/styles/dulce-eduardo-theme.css")
+  ]);
+  assert.match(demo, /name: "Eduardo y Dulce"/);
+  assert.match(demo, /event_date: "2026-11-28"/);
+  assert.match(platform, /date: "2026-11-28"/);
+  assert.match(welcome, /<i>y<\/i>/);
+  assert.match(itinerary, /iconFor\(item\.title\)/);
+  assert.match(gifts, /POR CONFIRMAR/);
+  assert.match(gifts, /hasBankDetails/);
+  assert.match(template, /!features\.whatsapp_rsvp/);
+  assert.match(theme, /eduardo-dulce-portada\.png/);
+  assert.match(theme, /templo-hospitalito/);
+});
+
+test("une el pase personalizado con la confirmación por WhatsApp", async () => {
+  const [template, combined, confirmation, styles] = await Promise.all([
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("src/components/invitation/PersonalizedPassConfirmation.jsx"),
+    read("src/components/invitation/WhatsAppConfirmation.jsx"),
+    read("src/styles/ui-polish.css")
+  ]);
+  assert.match(template, /PersonalizedPassConfirmation/);
+  assert.match(template, /features\.personalized_passes && features\.whatsapp_rsvp/);
+  assert.match(combined, /Tu pase y confirmación/);
+  assert.match(combined, /compact/);
+  assert.match(confirmation, /rsvp-section--embedded/);
+  assert.match(styles, /\.pass-confirmation-card/);
+});
+
 test("el panel transforma invitados en tarjetas móviles", async () => {
   const [table, styles] = await Promise.all([
     read("src/admin/GuestTable.jsx"),
@@ -280,7 +317,7 @@ test("aplica la paleta de boda únicamente a Dulce y Eduardo", async () => {
   for (const color of ["#3a381e", "#847400", "#f6a300", "#e44f00", "#661400"]) assert.match(theme, new RegExp(color));
   assert.match(theme, /\.theme-dulce-eduardo \.welcome/);
   assert.match(theme, /\.theme-dulce-eduardo \.invitation-footer/);
-  assert.match(theme, /dulce-eduardo-historia-01\.jpg/);
+  assert.match(theme, /eduardo-dulce-portada\.png/);
   assert.match(theme, /dulce-eduardo-sobre\.jpg/);
   assert.match(theme, /background-position|center bottom\/100% auto/);
   for (const detail of ["Templo Hospitalito", "Salón Casa de Adobe", "Entrada de los novios", "Vals de los novios", "Fin de la fiesta"]) {

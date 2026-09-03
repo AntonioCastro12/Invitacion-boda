@@ -11,7 +11,7 @@ begin
     raise exception 'Crea primero el usuario dulce.eduardo@rcminvitaciones.com en Supabase Authentication';
   end if;
 
-  update public.profiles set nombre = 'Dulce y Eduardo', rol = 'cliente' where id = client_uuid;
+  update public.profiles set nombre = 'Eduardo y Dulce', rol = 'cliente' where id = client_uuid;
 
   insert into public.events (
     id, client_id, name, slug, event_type, event_date, event_time, plan, template_key, template_config, price_reference,
@@ -19,15 +19,15 @@ begin
     reception_name, reception_address, reception_lat, reception_lng, music_url,
     itinerary, gift_registry
   ) values (
-    event_uuid, client_uuid, 'Dulce & Eduardo', 'dulce-eduardo', 'Boda', '2026-10-10', '14:00',
+    event_uuid, client_uuid, 'Eduardo y Dulce', 'dulce-eduardo', 'Boda', '2026-11-28', '14:00',
     'elegante', 'elegante-clasica',
-    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_url":"/video/nuestra-historia.mp4","video_poster":"/images/dulce-eduardo-historia-02.jpg","ceremony_image":"/images/dulce-eduardo-historia-04.jpg","reception_image":"/images/dulce-eduardo-historia-03.jpg","dress_code":{"title":"Formal"},"bank":{"bank":"Banco Nacional","holder":"Dulce & Eduardo","clabe":"000 000 0000000000 0"}}'::jsonb,
+    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_url":"/video/nuestra-historia.mp4","video_poster":"/images/dulce-eduardo-historia-02.jpg","ceremony_image":"/images/templo-hospitalito.png","reception_image":"/images/casa-de-adobe.png","dress_code":{"title":"Formal"}}'::jsonb,
     900, '5214623105704', 'Templo Hospitalito',
     'Misa · 2:00 p. m.', null, null,
     'Salón Casa de Adobe', 'Recepción · 4:00 p. m.', null, null,
     '/audio/boda.mp3',
     '[{"time":"2:00 PM","title":"Misa","description":"Templo Hospitalito"},{"time":"4:00 PM","title":"Recepción","description":"Salón Casa de Adobe"},{"time":"5:00 PM","title":"Entrada de los novios","description":"Comienza nuestra celebración"},{"time":"5:15 PM","title":"Comida","description":"Compartamos la mesa"},{"time":"6:30 PM","title":"Vals de los novios","description":"Nuestro primer baile"},{"time":"7:00 PM","title":"Baile","description":"¡A celebrar juntos!"},{"time":"12:00 AM","title":"Fin de la fiesta","description":"Gracias por acompañarnos"}]'::jsonb,
-    '[{"name":"Liverpool","url":"https://www.liverpool.com.mx/tienda/home"},{"name":"Amazon","url":"https://www.amazon.com.mx/registries"}]'::jsonb
+    '[{"name":"Liverpool","code":"POR CONFIRMAR"}]'::jsonb
   ) on conflict (id) do update set
     client_id = excluded.client_id,
     name = excluded.name,

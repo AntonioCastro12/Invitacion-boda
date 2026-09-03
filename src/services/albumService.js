@@ -2,10 +2,10 @@ import { isSupabaseConfigured, requireSupabase } from "./supabase";
 import { deleteLocalPhoto, listLocalPhotos, saveLocalPhotos } from "./localAlbumService";
 
 export const sampleAlbumPhotos = [
-  { id: "sample-1", url: "/images/dulce-eduardo-historia-01.jpg", author: "Familia Castro", createdAt: "2026-10-10T21:15:00-06:00", sample: true },
-  { id: "sample-2", url: "/images/dulce-eduardo-historia-02.jpg", author: "Amigos de los novios", createdAt: "2026-10-10T20:48:00-06:00", sample: true },
-  { id: "sample-3", url: "/images/dulce-eduardo-historia-03.jpg", author: "Familia Hernández", createdAt: "2026-10-10T19:32:00-06:00", sample: true },
-  { id: "sample-4", url: "/images/dulce-eduardo-historia-05.jpg", author: "Dulce & Eduardo", createdAt: "2026-10-10T18:10:00-06:00", sample: true }
+  { id: "sample-1", url: "/images/dulce-eduardo-historia-01.jpg", author: "Familia Castro", createdAt: "2026-11-28T21:15:00-06:00", sample: true },
+  { id: "sample-2", url: "/images/dulce-eduardo-historia-02.jpg", author: "Amigos de los novios", createdAt: "2026-11-28T20:48:00-06:00", sample: true },
+  { id: "sample-3", url: "/images/dulce-eduardo-historia-03.jpg", author: "Familia Hernández", createdAt: "2026-11-28T19:32:00-06:00", sample: true },
+  { id: "sample-4", url: "/images/dulce-eduardo-historia-05.jpg", author: "Eduardo y Dulce", createdAt: "2026-11-28T18:10:00-06:00", sample: true }
 ];
 
 const samplesFor = (event) => event.slug === "dulce-eduardo" ? sampleAlbumPhotos : [];

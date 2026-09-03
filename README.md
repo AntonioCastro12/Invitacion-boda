@@ -89,7 +89,7 @@ La demostración incluye `https://prueba-invitacionxv.netlify.app/` como evento 
 
 ## Diseños personalizados para múltiples invitaciones
 
-Cada evento guarda internamente un `template_key`, pero el cliente no selecciona una plantilla. RCM Code Dev crea y asigna el diseño personalizado. Dulce & Eduardo utiliza `elegante-clasica`, con sobre animado, sello con iniciales y portada romántica.
+Cada evento guarda internamente un `template_key`, pero el cliente no selecciona una plantilla. RCM Code Dev crea y asigna el diseño personalizado. Eduardo y Dulce utiliza `elegante-clasica`, con sobre animado, sello con iniciales y portada romántica.
 
 El campo `template_config` almacena contenido visual propio de cada evento —fotografías, video, imágenes de ubicaciones, dress code y datos bancarios— sin dejar esos datos fijos dentro de los componentes.
 
