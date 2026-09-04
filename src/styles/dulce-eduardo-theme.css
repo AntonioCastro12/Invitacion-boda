@@ -408,7 +408,11 @@
 }
 
 .theme-dulce-eduardo .location-card__image[src*="templo-hospitalito"] {
-  object-position: center 45%;
+  height: auto;
+  aspect-ratio: 854 / 1280;
+  object-fit: contain;
+  object-position: center;
+  background: #e7d9bd;
 }
 
 .theme-dulce-eduardo .location-card__image[src*="casa-de-adobe"] {

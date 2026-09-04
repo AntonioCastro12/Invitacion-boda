@@ -139,6 +139,10 @@
 .pass-confirmation-card .classic-pass { max-width: none; margin: 0; border: 0; box-shadow: none; }
 .pass-confirmation-card .classic-pass::before,
 .pass-confirmation-card .classic-pass::after { display: none; }
+.classic-pass__table { display: grid; width: 100%; justify-items: center; gap: .22rem; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); }
+.classic-pass__table > svg { margin-bottom: .12rem; color: var(--gold); }
+.classic-pass__table > span { color: var(--muted); font-size: .54rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.classic-pass__table > strong { color: var(--classic-olive); font-family: "Cormorant Garamond", serif; font-size: 1.75rem; font-weight: 600; line-height: 1; }
 .rsvp-section--embedded { position: relative; padding: 2.2rem 1.4rem 1.5rem; border-top: 1px dashed color-mix(in srgb, var(--gold) 52%, transparent); text-align: center; }
 .rsvp-section--embedded::before,
 .rsvp-section--embedded::after { position: absolute; top: -13px; width: 26px; height: 26px; content: ""; border-radius: 50%; background: var(--ivory); }

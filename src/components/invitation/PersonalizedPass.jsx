@@ -1,8 +1,17 @@
-import { Check, Copy, Heart, Share2, TicketCheck, Users } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Heart,
+  Share2,
+  TicketCheck,
+  UtensilsCrossed,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
 
 export default function PersonalizedPass({ guest, event, compact = false }) {
   const [copied, setCopied] = useState(false);
+  const tableNumber = guest.table_name?.replace(/^mesa\s*/i, "").trim();
   const url = `${window.location.origin}/evento/${event.slug}/${guest.code}`;
   async function copy() {
     await navigator.clipboard.writeText(url);
@@ -30,6 +39,13 @@ export default function PersonalizedPass({ guest, event, compact = false }) {
           <span>Tenemos reservados</span>
           <strong>{guest.passes}</strong>
           <b>{guest.passes === 1 ? "lugar" : "lugares"}</b>
+          {tableNumber && (
+            <div className="classic-pass__table">
+              <UtensilsCrossed size={18} strokeWidth={1.2} />
+              <span>Número de mesa</span>
+              <strong>{tableNumber}</strong>
+            </div>
+          )}
         </div>
         {event.features?.individual_qr && (
           <div className="classic-pass__digital">

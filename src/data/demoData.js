@@ -18,7 +18,7 @@ export const demoEvent = {
     ],
     video_url: "/video/nuestra-historia.mp4",
     video_poster: "/images/dulce-eduardo-historia-02.jpg",
-    ceremony_image: "/images/templo-hospitalito.png",
+    ceremony_image: "/images/templo-hospitalito-sin-persona.png",
     reception_image: "/images/casa-de-adobe.png",
     dress_code: { title: "Formal" },
   },

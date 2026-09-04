@@ -21,7 +21,7 @@ begin
   ) values (
     event_uuid, client_uuid, 'Eduardo y Dulce', 'dulce-eduardo', 'Boda', '2026-11-28', '14:00',
     'elegante', 'elegante-clasica',
-    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_url":"/video/nuestra-historia.mp4","video_poster":"/images/dulce-eduardo-historia-02.jpg","ceremony_image":"/images/templo-hospitalito.png","reception_image":"/images/casa-de-adobe.png","dress_code":{"title":"Formal"}}'::jsonb,
+    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_url":"/video/nuestra-historia.mp4","video_poster":"/images/dulce-eduardo-historia-02.jpg","ceremony_image":"/images/templo-hospitalito-sin-persona.png","reception_image":"/images/casa-de-adobe.png","dress_code":{"title":"Formal"}}'::jsonb,
     900, '5214623105704', 'Templo Hospitalito',
     'Misa · 2:00 p. m.', null, null,
     'Salón Casa de Adobe', 'Recepción · 4:00 p. m.', null, null,

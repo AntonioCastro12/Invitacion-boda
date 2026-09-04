@@ -110,14 +110,18 @@ test("personaliza la boda de Eduardo y Dulce con la información corregida", asy
   assert.match(gifts, /hasBankDetails/);
   assert.match(template, /!features\.whatsapp_rsvp/);
   assert.match(theme, /dulce-eduardo-historia-01\.jpg/);
+  assert.match(demo, /templo-hospitalito-sin-persona\.png/);
   assert.match(theme, /templo-hospitalito/);
+  assert.match(theme, /aspect-ratio: 854 \/ 1280/);
+  assert.match(theme, /object-fit: contain/);
 });
 
 test("une el pase personalizado con la confirmación por WhatsApp", async () => {
-  const [template, combined, confirmation, styles] = await Promise.all([
+  const [template, combined, confirmation, pass, styles] = await Promise.all([
     read("src/templates/ElegantClassicTemplate.jsx"),
     read("src/components/invitation/PersonalizedPassConfirmation.jsx"),
     read("src/components/invitation/WhatsAppConfirmation.jsx"),
+    read("src/components/invitation/PersonalizedPass.jsx"),
     read("src/styles/ui-polish.css")
   ]);
   assert.match(template, /PersonalizedPassConfirmation/);
@@ -125,7 +129,10 @@ test("une el pase personalizado con la confirmación por WhatsApp", async () => 
   assert.match(combined, /Tu pase y confirmación/);
   assert.match(combined, /compact/);
   assert.match(confirmation, /rsvp-section--embedded/);
+  assert.match(pass, /guest\.table_name/);
+  assert.match(pass, /Número de mesa/);
   assert.match(styles, /\.pass-confirmation-card/);
+  assert.match(styles, /\.classic-pass__table/);
 });
 
 test("el panel transforma invitados en tarjetas móviles", async () => {
