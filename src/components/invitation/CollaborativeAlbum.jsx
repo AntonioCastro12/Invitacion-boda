@@ -6,7 +6,7 @@ import { listAlbumPhotos, sampleAlbumPhotos } from "../../services/albumService"
 function PreviewPhoto({ photo }) {
   const localUrl = useMemo(() => photo.blob ? URL.createObjectURL(photo.blob) : null, [photo.blob]);
   useEffect(() => () => { if (localUrl) URL.revokeObjectURL(localUrl); }, [localUrl]);
-  return <img src={localUrl || photo.url} alt={`Fotografía reciente de ${photo.author}`} />;
+  return <img src={localUrl || photo.url} alt={`Fotografía reciente de ${photo.author}`} loading="lazy" decoding="async" />;
 }
 
 export default function CollaborativeAlbum({ event, guest }) {

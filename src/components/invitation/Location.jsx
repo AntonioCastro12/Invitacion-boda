@@ -30,6 +30,8 @@ export default function Location({
             : "/images/pareja-5.jpg")
         }
         alt={name}
+        loading="lazy"
+        decoding="async"
       />
       <div className="location-card__body">
         <MapPin className="section-icon" aria-hidden="true" />

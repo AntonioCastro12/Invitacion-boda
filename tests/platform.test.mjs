@@ -29,6 +29,8 @@ test("incluye rutas, CRUD y personalización dinámica", async () => {
   ]);
   assert.match(app, /evento\/:eventoSlug\/:codigoInvitado/);
   assert.match(app, /path="invitados"/);
+  assert.match(app, /lazy\(\(\) => import/);
+  assert.match(app, /Suspense/);
   assert.match(invitation, /useGuest\(eventoSlug, codigoInvitado\)/);
   assert.match(guests, /createGuest/);
   assert.match(guests, /deleteGuest/);
@@ -110,7 +112,11 @@ test("personaliza la boda de Eduardo y Dulce con la información corregida", asy
   assert.match(gifts, /hasBankDetails/);
   assert.match(template, /!features\.whatsapp_rsvp/);
   assert.match(theme, /dulce-eduardo-historia-01\.jpg/);
-  assert.match(demo, /templo-hospitalito-sin-persona\.png/);
+  assert.match(demo, /templo-hospitalito-sin-persona-optimized\.jpg/);
+  assert.match(demo, /casa-de-adobe-optimized\.jpg/);
+  assert.match(demo, /eduardo-dulce-montaje\.mp4/);
+  assert.match(demo, /video_poster/);
+  assert.match(demo, /album_cover: "\/images\/dulce-eduardo-album-destacada\.jpg"/);
   assert.match(theme, /templo-hospitalito/);
   assert.match(theme, /aspect-ratio: 854 \/ 1280/);
   assert.match(theme, /object-fit: contain/);
@@ -173,6 +179,8 @@ test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes"
   assert.match(service, /album-access/);
   assert.match(service, /submit_album_photo/);
   assert.match(service, /event-albums/);
+  assert.match(service, /dulce-eduardo-album-destacada\.jpg/);
+  assert.match(service, /author: "Eduardo y Dulce"/);
   assert.match(preview, /photos\.slice\(0, 4\)/);
   assert.match(page, /album-social-feed/);
   assert.match(migration, /enable row level security/);

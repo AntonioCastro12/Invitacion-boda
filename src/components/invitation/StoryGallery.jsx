@@ -48,7 +48,7 @@ export default function StoryGallery({ photos = fallbackPhotos }) {
                 if (info.offset.x > 45) move(-1);
               }}
             >
-              <img src={items[active]} alt={`Recuerdo de los novios ${active + 1} de ${items.length}`} draggable="false" />
+              <img src={items[active]} alt={`Recuerdo de los novios ${active + 1} de ${items.length}`} loading="lazy" decoding="async" draggable="false" />
               <span>{String(active + 1).padStart(2, "0")}</span>
             </motion.figure>
           </AnimatePresence>

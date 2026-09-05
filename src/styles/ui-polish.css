@@ -5,6 +5,11 @@
   --button-shadow: 0 10px 24px rgba(38, 53, 44, .14), inset 0 1px rgba(255, 255, 255, .2);
 }
 
+.section-reveal {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
 .button {
   position: relative;
   isolation: isolate;

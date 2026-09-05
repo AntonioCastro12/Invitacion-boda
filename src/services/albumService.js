@@ -8,8 +8,8 @@ import {
 export const sampleAlbumPhotos = [
   {
     id: "sample-1",
-    url: "/images/dulce-eduardo-historia-01.jpg",
-    author: "Familia Castro",
+    url: "/images/dulce-eduardo-album-destacada.jpg",
+    author: "Eduardo y Dulce",
     createdAt: "2026-11-28T21:15:00-06:00",
     sample: true,
   },

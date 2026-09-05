@@ -51,7 +51,7 @@ export default function ElegantClassicTemplate({ event, guest }) {
 
   return (
     <div className={`invitation-page template-elegante-clasica ${invitationTheme}`}>
-      {features.music && <audio ref={audioRef} src={event.music_url} loop preload="metadata" />}
+      {features.music && <audio ref={audioRef} src={event.music_url} loop preload="none" />}
       <AnimatePresence>{features.animated_cover && !opened && <WelcomeScreen event={event} onOpen={openInvitation} />}</AnimatePresence>
       {opened && <ElegantOrnaments />}
       {opened && features.music && <MusicPlayer playing={playing} onToggle={toggleMusic} />}

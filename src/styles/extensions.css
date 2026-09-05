@@ -1050,7 +1050,10 @@
   position: relative;
   min-height: 370px;
   padding: 1.5rem clamp(1rem, 5vw, 4rem) 3rem;
-  background: linear-gradient(rgba(31, 49, 39, 0.86), rgba(38, 53, 44, 0.94)), url("/images/pareja-3.jpg") center/cover;
+  background-color: #26352c;
+  background-image: linear-gradient(rgba(31, 49, 39, 0.34), rgba(38, 53, 44, 0.82)), var(--album-cover, linear-gradient(135deg, #536357, #26352c));
+  background-position: center;
+  background-size: cover;
   color: white;
 }
 

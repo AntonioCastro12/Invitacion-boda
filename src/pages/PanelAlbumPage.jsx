@@ -7,7 +7,7 @@ import { hideOwnerAlbumPhoto, listOwnerAlbumPhotos } from "../services/albumServ
 function Photo({ photo, onHide }) {
   const localUrl = useMemo(() => photo.blob ? URL.createObjectURL(photo.blob) : null, [photo.blob]);
   useEffect(() => () => { if (localUrl) URL.revokeObjectURL(localUrl); }, [localUrl]);
-  return <article><img src={localUrl || photo.url} alt={`Fotografía de ${photo.author}`} /><div><span><strong>{photo.author}</strong><small>{new Intl.DateTimeFormat("es-MX", { dateStyle: "medium" }).format(new Date(photo.createdAt))}</small></span>{!photo.sample && <button type="button" onClick={() => onHide(photo)} aria-label="Ocultar fotografía"><EyeOff /></button>}</div></article>;
+  return <article><img src={localUrl || photo.url} alt={`Fotografía de ${photo.author}`} loading="lazy" decoding="async" /><div><span><strong>{photo.author}</strong><small>{new Intl.DateTimeFormat("es-MX", { dateStyle: "medium" }).format(new Date(photo.createdAt))}</small></span>{!photo.sample && <button type="button" onClick={() => onHide(photo)} aria-label="Ocultar fotografía"><EyeOff /></button>}</div></article>;
 }
 
 export default function PanelAlbumPage() {
