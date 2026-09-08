@@ -2,13 +2,15 @@ import { ArrowLeft, Camera, Heart, ImagePlus, Info, Trash2, Upload } from "lucid
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useGuest } from "../hooks/useGuest";
-import { isSharedAlbumEnabled, listAlbumPhotos, removeAlbumPhoto, uploadAlbumPhotos } from "../services/albumService";
+import { isSharedAlbumEnabled, isVideoMedia, listAlbumPhotos, removeAlbumPhoto, uploadAlbumPhotos } from "../services/albumService";
 
 function FeedPhoto({ photo, onDelete }) {
   const [liked, setLiked] = useState(false);
   const localUrl = useMemo(() => photo.blob ? URL.createObjectURL(photo.blob) : null, [photo.blob]);
   useEffect(() => () => { if (localUrl) URL.revokeObjectURL(localUrl); }, [localUrl]);
-  return <article className="album-feed-card"><header><span className="album-feed-avatar">{photo.author.slice(0, 1).toUpperCase()}</span><div><strong>{photo.author}</strong><time dateTime={photo.createdAt}>{new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short" }).format(new Date(photo.createdAt))}</time></div>{photo.local && <button type="button" onClick={() => onDelete(photo)} aria-label="Eliminar fotografía local"><Trash2 size={17} /></button>}</header><img src={localUrl || photo.url} alt={`Recuerdo compartido por ${photo.author}`} loading="lazy" decoding="async" /><footer><button className={liked ? "is-liked" : ""} type="button" onClick={() => setLiked(!liked)} aria-label={liked ? "Quitar Me gusta" : "Me gusta"}><Heart size={23} fill={liked ? "currentColor" : "none"} /></button><span>{liked ? "Te gusta esta fotografía" : "Un recuerdo de nuestra celebración"}</span>{photo.sample && <small>Foto de muestra</small>}</footer></article>;
+  const source = localUrl || photo.url;
+  const isVideo = isVideoMedia(photo);
+  return <article className="album-feed-card"><header><span className="album-feed-avatar">{photo.author.slice(0, 1).toUpperCase()}</span><div><strong>{photo.author}</strong><time dateTime={photo.createdAt}>{new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short" }).format(new Date(photo.createdAt))}</time></div>{photo.local && <button type="button" onClick={() => onDelete(photo)} aria-label="Eliminar recuerdo local"><Trash2 size={17} /></button>}</header>{isVideo ? <video src={source} controls playsInline preload="metadata" aria-label={`Video compartido por ${photo.author}`} /> : <img src={source} alt={`Recuerdo compartido por ${photo.author}`} loading="lazy" decoding="async" />}<footer><button className={liked ? "is-liked" : ""} type="button" onClick={() => setLiked(!liked)} aria-label={liked ? "Quitar Me gusta" : "Me gusta"}><Heart size={23} fill={liked ? "currentColor" : "none"} /></button><span>{liked ? "Te gusta este recuerdo" : "Un recuerdo de nuestra celebración"}</span>{photo.sample && <small>Foto de muestra</small>}</footer></article>;
 }
 
 export default function AlbumPage() {
@@ -33,14 +35,14 @@ export default function AlbumPage() {
     const files = event.target.files;
     if (!files?.length || !invitation) return;
     setUploading(true); setNotice("");
-    try { await uploadAlbumPhotos(invitation.event, invitation.guest, files); await refresh(); setNotice(`${files.length} ${files.length === 1 ? "fotografía publicada" : "fotografías publicadas"} correctamente.`); }
-    catch (reason) { setNotice(reason.message || "No fue posible publicar las fotografías."); }
+    try { await uploadAlbumPhotos(invitation.event, invitation.guest, files); await refresh(); setNotice(`${files.length} ${files.length === 1 ? "recuerdo publicado" : "recuerdos publicados"} correctamente.`); }
+    catch (reason) { setNotice(reason.message || "No fue posible publicar los archivos."); }
     finally { setUploading(false); event.target.value = ""; }
   }
 
   async function remove(photo) {
-    if (!window.confirm("¿Eliminar esta fotografía del dispositivo?")) return;
-    try { await removeAlbumPhoto(photo); await refresh(); setNotice("Fotografía local eliminada."); }
+    if (!window.confirm("¿Eliminar este recuerdo del dispositivo?")) return;
+    try { await removeAlbumPhoto(photo); await refresh(); setNotice("Recuerdo local eliminado."); }
     catch (reason) { setNotice(reason.message); }
   }
 
@@ -59,5 +61,5 @@ export default function AlbumPage() {
     ? { "--album-cover": `url("${albumCover}")` }
     : undefined;
 
-  return <main className="local-album-page shared-album-page"><header className="local-album-hero" style={albumHeroStyle}><Link to={`/evento/${event.slug}/${guest.code}`}><ArrowLeft size={18} /> Volver a la invitación</Link><div><Camera size={28} /><span>Álbum compartido de</span><h1>{event.name}</h1><p>Un feed privado creado por quienes forman parte de este día.</p></div></header><section className="shared-album-content">{!isSharedAlbumEnabled && <div className="local-storage-alert"><Info size={20} /><div><strong>Vista de demostración aislada</strong><p>Estas fotografías sólo se guardan en este dispositivo y dentro del evento actual.</p></div></div>}<div className="shared-album-toolbar"><div><span>Publicando como</span><strong>{guest.name}</strong><small>{photos.length} recuerdos cargados</small></div><input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={upload} hidden /><button className="button button--gold" type="button" onClick={() => inputRef.current?.click()} disabled={uploading}><Upload size={18} /> {uploading ? "Publicando…" : "Compartir fotos"}</button></div>{notice && <div className="album-notice" role="status">{notice}</div>}{photos.length ? <><div className="album-social-feed">{photos.map((photo) => <FeedPhoto key={photo.id} photo={photo} onDelete={remove} />)}</div>{hasMore && <button className="button button--light album-load-more" type="button" onClick={loadMore}>Cargar más fotografías</button>}</> : <div className="local-album-empty"><ImagePlus size={40} /><h2>Aún no hay fotografías</h2><p>Sé la primera persona en compartir un recuerdo de esta celebración.</p><button className="button button--olive" type="button" onClick={() => inputRef.current?.click()}><Upload size={18} /> Seleccionar fotografías</button></div>}</section></main>;
+  return <main className="local-album-page shared-album-page"><header className="local-album-hero" style={albumHeroStyle}><Link to={`/evento/${event.slug}/${guest.code}`}><ArrowLeft size={18} /> Volver a la invitación</Link><div><Camera size={28} /><span>Álbum compartido de</span><h1>{event.name}</h1><p>Un feed privado de fotografías y videos creado por quienes forman parte de este día.</p></div></header><section className="shared-album-content">{!isSharedAlbumEnabled && <div className="local-storage-alert"><Info size={20} /><div><strong>Vista de demostración aislada</strong><p>Estos recuerdos sólo se guardan en este dispositivo y dentro del evento actual.</p></div></div>}<div className="shared-album-toolbar"><div><span>Publicando como</span><strong>{guest.name}</strong><small>{photos.length} recuerdos cargados</small></div><input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" multiple onChange={upload} hidden /><button className="button button--gold" type="button" onClick={() => inputRef.current?.click()} disabled={uploading}><Upload size={18} /> {uploading ? "Publicando…" : "Compartir fotos o videos"}</button></div>{notice && <div className="album-notice" role="status">{notice}</div>}{photos.length ? <><div className="album-social-feed">{photos.map((photo) => <FeedPhoto key={photo.id} photo={photo} onDelete={remove} />)}</div>{hasMore && <button className="button button--light album-load-more" type="button" onClick={loadMore}>Cargar más recuerdos</button>}</> : <div className="local-album-empty"><ImagePlus size={40} /><h2>Aún no hay recuerdos</h2><p>Sé la primera persona en compartir una fotografía o video de esta celebración.</p><button className="button button--olive" type="button" onClick={() => inputRef.current?.click()}><Upload size={18} /> Seleccionar archivos</button></div>}</section></main>;
 }

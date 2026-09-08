@@ -36,6 +36,18 @@ export const sampleAlbumPhotos = [
   },
 ];
 
+const ALLOWED_MEDIA_TYPES = new Set([
+  "image/jpeg", "image/png", "image/webp", "image/gif",
+  "video/mp4", "video/webm", "video/quicktime",
+]);
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 25 * 1024 * 1024;
+
+export function isVideoMedia(media) {
+  const mimeType = media?.mimeType || media?.mime_type || media?.type || "";
+  return mimeType.startsWith("video/") || /\.(mp4|webm|mov)(?:$|\?)/i.test(media?.url || "");
+}
+
 const samplesFor = (event) =>
   event.slug === "dulce-eduardo" ? sampleAlbumPhotos : [];
 
@@ -68,6 +80,7 @@ export async function listAlbumPhotos(event, guest, page = 0) {
       url: photo.signed_url,
       author: photo.uploader_name,
       createdAt: photo.created_at,
+      mimeType: photo.mime_type,
       shared: true,
     }),
   );
@@ -119,16 +132,17 @@ export async function hideOwnerAlbumPhoto(photo) {
 }
 
 export async function uploadAlbumPhotos(event, guest, files) {
-  const images = Array.from(files);
+  const media = Array.from(files);
   if (!isSupabaseConfigured) {
-    await saveLocalPhotos(`${event.id}:${event.slug}`, images, guest.name);
+    await saveLocalPhotos(`${event.id}:${event.slug}`, media, guest.name);
     return;
   }
 
   const client = requireSupabase();
-  for (const file of images) {
-    if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024)
-      throw new Error("Cada archivo debe ser una imagen de máximo 10 MB.");
+  for (const file of media) {
+    const maxSize = file.type.startsWith("video/") ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    if (!ALLOWED_MEDIA_TYPES.has(file.type) || file.size > maxSize)
+      throw new Error("Cada foto puede pesar hasta 10 MB y cada video hasta 25 MB.");
     const { data: authorization, error: authorizationError } =
       await client.functions.invoke("album-access", {
         body: {
@@ -163,7 +177,7 @@ export async function uploadAlbumPhotos(event, guest, files) {
 export async function removeAlbumPhoto(photo) {
   if (!photo.local)
     throw new Error(
-      "Las fotografías compartidas serán moderadas desde el panel de los novios.",
+      "Los recuerdos compartidos serán moderados desde el panel de los anfitriones.",
     );
   await deleteLocalPhoto(photo.id);
 }

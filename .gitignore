@@ -40,3 +40,4 @@ yarn-error.log*
 /.netlify/
 /outputs/
 /work/
+/supabase/.temp/

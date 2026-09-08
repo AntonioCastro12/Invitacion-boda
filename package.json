@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "check": "npm run lint && npm test && npm run build && npm audit --omit=dev",
     "preview": "vite preview",
     "test": "node --test tests/*.test.mjs",
     "lint": "eslint src vite.config.js"

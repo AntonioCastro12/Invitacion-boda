@@ -2,7 +2,15 @@ import { createClient } from "npm:@supabase/supabase-js@2.112.3";
 
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
-const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const allowedTypes = new Map([
+  ["image/jpeg", { extension: "jpg", maxSize: 10 * 1024 * 1024 }],
+  ["image/png", { extension: "png", maxSize: 10 * 1024 * 1024 }],
+  ["image/webp", { extension: "webp", maxSize: 10 * 1024 * 1024 }],
+  ["image/gif", { extension: "gif", maxSize: 10 * 1024 * 1024 }],
+  ["video/mp4", { extension: "mp4", maxSize: 25 * 1024 * 1024 }],
+  ["video/webm", { extension: "webm", maxSize: 25 * 1024 * 1024 }],
+  ["video/quicktime", { extension: "mov", maxSize: 25 * 1024 * 1024 }],
+]);
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -24,9 +32,9 @@ Deno.serve(async (request) => {
     if (body.action === "upload-url") {
       const size = Number(body.size);
       const mimeType = String(body.mimeType || "");
-      if (!allowedTypes.has(mimeType) || !Number.isFinite(size) || size < 1 || size > 10 * 1024 * 1024) return json({ error: "Archivo no permitido" }, 400);
-      const extension = String(body.fileName || "foto.jpg").split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-      const path = `${event.id}/${guest.id}/${crypto.randomUUID()}.${extension}`;
+      const mediaRules = allowedTypes.get(mimeType);
+      if (!mediaRules || !Number.isFinite(size) || size < 1 || size > mediaRules.maxSize) return json({ error: "Archivo no permitido" }, 400);
+      const path = `${event.id}/${guest.id}/${crypto.randomUUID()}.${mediaRules.extension}`;
       const { data, error } = await admin.storage.from("event-albums").createSignedUploadUrl(path);
       if (error) throw error;
       return json({ path, token: data.token });
@@ -35,7 +43,7 @@ Deno.serve(async (request) => {
     const page = Math.max(0, Math.floor(Number(body.page) || 0));
     const pageSize = 40;
     const start = page * pageSize;
-    const { data: photoRows, error } = await admin.from("album_photos").select("id,uploader_name,storage_path,created_at").eq("event_id", event.id).eq("status", "visible").order("created_at", { ascending: false }).range(start, start + pageSize);
+    const { data: photoRows, error } = await admin.from("album_photos").select("id,uploader_name,storage_path,mime_type,created_at").eq("event_id", event.id).eq("status", "visible").order("created_at", { ascending: false }).range(start, start + pageSize);
     if (error) throw error;
     const hasMore = (photoRows?.length || 0) > pageSize;
     const photos = (photoRows || []).slice(0, pageSize);

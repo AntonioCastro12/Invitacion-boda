@@ -102,7 +102,7 @@ test("personaliza la boda de Eduardo y Dulce con la información corregida", asy
   assert.match(demo, /name: "Eduardo y Dulce"/);
   assert.match(demo, /event_date: "2026-11-28"/);
   assert.match(platform, /date: "2026-11-28"/);
-  assert.match(welcome, /<i>y<\/i>/);
+  assert.match(welcome, /<i>&amp;<\/i>/);
   assert.match(itinerary, /iconFor\(item\.title\)/);
   assert.match(demo, /code: "60033184"/);
   assert.match(demo, /mesaderegalos\.liverpool\.com\.mx\/milistaderegalos\/60033184/);
@@ -163,10 +163,11 @@ test("ofrece un álbum independiente mediante botón y QR con respaldo local", a
   assert.match(app, /album\/:eventoSlug\/:codigoInvitado/);
   assert.match(albumAccess, /QRCodeSVG/);
   assert.match(albumAccess, /Abrir álbum digital/);
-  assert.match(albumPage, /accept="image\/jpeg,image\/png,image\/webp,image\/gif"/);
+  assert.match(albumPage, /video\/mp4,video\/webm,video\/quicktime/);
+  assert.match(albumPage, /<video/);
   assert.match(albumPage, /removeAlbumPhoto/);
   assert.match(service, /indexedDB/);
-  assert.match(service, /maxPhotos: null/);
+  assert.match(service, /maxItems: null/);
 });
 
 test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes", async () => {
@@ -179,6 +180,7 @@ test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes"
   assert.match(service, /album-access/);
   assert.match(service, /submit_album_photo/);
   assert.match(service, /event-albums/);
+  assert.match(service, /isVideoMedia/);
   assert.match(service, /dulce-eduardo-album-destacada\.jpg/);
   assert.match(service, /author: "Eduardo y Dulce"/);
   assert.match(preview, /photos\.slice\(0, 4\)/);
@@ -186,6 +188,23 @@ test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes"
   assert.match(migration, /enable row level security/);
   assert.match(migration, /revoke all on public\.album_photos from anon/);
   assert.match(migration, /create index album_photos_event_created_idx/);
+});
+
+test("admite videos privados en el álbum con límites seguros", async () => {
+  const [edgeFunction, migration, localService, albumPage] = await Promise.all([
+    read("supabase/functions/album-access/index.ts"),
+    read("supabase/migrations/20260908170315_album_photo_video_support.sql"),
+    read("src/services/localAlbumService.js"),
+    read("src/pages/AlbumPage.jsx")
+  ]);
+  for (const type of ["video/mp4", "video/webm", "video/quicktime"]) {
+    assert.match(edgeFunction, new RegExp(type.replace("/", "\\/")));
+    assert.match(migration, new RegExp(type.replace("/", "\\/")));
+  }
+  assert.match(edgeFunction, /25 \* 1024 \* 1024/);
+  assert.match(migration, /public = false/);
+  assert.match(localService, /MAX_VIDEO_SIZE/);
+  assert.match(albumPage, /Compartir fotos o videos/);
 });
 
 test("activa servicios por paquete sin permitir que el cliente elija diseño", async () => {

@@ -34,6 +34,7 @@ Desde `/admin` se puede cambiar entre los seis paquetes, activar servicios adici
    - `supabase/migrations/202608200003_check_ins.sql`
    - `supabase/migrations/202608200004_external_invitation_url.sql`
    - `supabase/migrations/202608200005_package_catalog_pdf.sql`
+   - `supabase/migrations/20260908170315_album_photo_video_support.sql`
 3. En **Authentication > Users**, crea el usuario `dulce.eduardo@rcminvitaciones.com` con una contraseña segura.
 4. Ejecuta `supabase/seed.sql` para crear el evento y los cuatro invitados de prueba.
 5. Copia `.env.example` como `.env` y completa:
@@ -93,11 +94,15 @@ Cada evento guarda internamente un `template_key`, pero el cliente no selecciona
 
 El campo `template_config` almacena contenido visual propio de cada evento —fotografías, video, imágenes de ubicaciones, dress code y datos bancarios— sin dejar esos datos fijos dentro de los componentes.
 
-### Álbum compartido
+### Álbum compartido de fotografías y videos
 
-Con Supabase configurado, el álbum usa el bucket privado `event-albums` y la tabla `album_photos`. Todos los invitados con un enlace válido del mismo evento ven el mismo feed y pueden publicar imágenes de hasta 10 MB. No existe un límite de cantidad impuesto por la aplicación; el límite real depende del almacenamiento contratado. La invitación muestra las cuatro publicaciones más recientes junto al QR.
+Con Supabase configurado, el álbum usa el bucket privado `event-albums` y la tabla `album_photos`. Todos los invitados con un enlace válido del mismo evento ven el mismo feed y pueden publicar fotografías JPG, PNG, WebP o GIF de hasta 10 MB, y videos MP4, WebM o MOV de hasta 25 MB. No existe un límite de cantidad impuesto por la aplicación; el límite real depende del almacenamiento contratado. La invitación muestra las cuatro publicaciones más recientes junto al QR y el feed reproduce los videos con controles nativos.
 
-La función `supabase/functions/album-access` valida el slug y código individual antes de crear URLs firmadas con diez minutos de vigencia. Debe desplegarse como función pública controlada (`--no-verify-jwt`) porque los invitados no tienen una cuenta de Supabase. Sin Supabase, el proyecto conserva una demostración aislada por evento con IndexedDB; las subidas locales sólo aparecen en el navegador que las guardó.
+La función `supabase/functions/album-access` valida el slug, código individual, tipo MIME y tamaño antes de crear URLs firmadas con diez minutos de vigencia. Debe desplegarse como función pública controlada (`--no-verify-jwt`) porque los invitados no tienen una cuenta de Supabase. Sin Supabase, el proyecto conserva una demostración aislada por evento con IndexedDB; las subidas locales sólo aparecen en el navegador que las guardó.
+
+```bash
+npx supabase functions deploy album-access --no-verify-jwt
+```
 
 Para añadir otro diseño no es necesario crear otro proyecto: RCM crea un componente dentro de `src/templates`, registra su clave y lo asigna al evento. El cliente únicamente administra los servicios permitidos por su paquete.
 
@@ -111,12 +116,15 @@ El archivo `netlify.toml` ya configura:
 
 En Netlify agrega `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_PUBLIC_SITE_URL` y `VITE_DEMO_MODE` en **Environment variables**. Usa `VITE_DEMO_MODE=true` para publicar una muestra con los accesos visibles en `/login`; usa `VITE_DEMO_MODE=false` para la versión real conectada a los usuarios de Supabase.
 
+Antes de publicar la versión de producción, configura `VITE_PUBLIC_SITE_URL` con el dominio final de Netlify y confirma que `.env` no esté incluido en Git. Los archivos de `assets-source` son respaldos de edición y Vite no los copia a `dist`.
+
 ## Comprobaciones
 
 ```bash
 npm run build
 npm run lint
 npm test
+npm audit --omit=dev
 ```
 
 ## Operación del paquete VIP
