@@ -4,6 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  VITE_DEMO_MODE = "false"
+  VITE_PUBLIC_SITE_URL = "https://rcm-invitaciones.netlify.app"
 
 [dev]
   command = "npm run dev"
