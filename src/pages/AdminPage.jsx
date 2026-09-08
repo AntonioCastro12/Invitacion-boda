@@ -1,52 +1,99 @@
 import { CalendarDays, Check, ExternalLink, FolderKanban, LogOut, Plus, RotateCcw, Save, ShieldCheck, Sparkles, Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { featureCatalog, packageComparison, packages, resolvePackage } from "../data/packageCatalog";
 import { useAuth } from "../hooks/useAuth";
+import { createAdminProject, getAdminPlatformState, updateAdminClient, updateAdminProject } from "../services/adminService";
 import { createDemoProject, getDemoPlatformState, resetDemoPlatform, updateDemoProject } from "../services/demoPlatformService";
 
 export default function AdminPage() {
   const { profile, signOut, isDemoMode } = useAuth();
   const navigate = useNavigate();
-  const [state, setState] = useState(getDemoPlatformState);
+  const [state, setState] = useState(() => (isDemoMode ? getDemoPlatformState() : null));
+  const [loading, setLoading] = useState(!isDemoMode);
+  const [loadError, setLoadError] = useState("");
   const [notice, setNotice] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(() => getDemoPlatformState().projects[0]?.id);
+  const [selectedProjectId, setSelectedProjectId] = useState(() => (isDemoMode ? getDemoPlatformState().projects[0]?.id : null));
   const emptyProject = { name: "", slug: "", eventType: "Boda", date: "2027-01-01", clientName: "", clientEmail: "", clientPassword: "", packageKey: "elegante-900", invitationUrl: "" };
   const [projectForm, setProjectForm] = useState(emptyProject);
-  const selectedProject = state.projects.find((project) => project.id === selectedProjectId) || state.projects[0];
+  const selectedProject = state?.projects.find((project) => project.id === selectedProjectId) || state?.projects[0];
   const entitlement = useMemo(() => resolvePackage(selectedProject?.packageKey, selectedProject?.featureOverrides), [selectedProject]);
 
+  async function refresh() {
+    if (isDemoMode) {
+      setState(getDemoPlatformState());
+      return;
+    }
+    try {
+      const next = await getAdminPlatformState();
+      setState(next);
+      setSelectedProjectId((current) => current || next.projects[0]?.id);
+    } catch (error) {
+      setLoadError(error.message || "No fue posible cargar los proyectos.");
+    }
+  }
+
+  useEffect(() => {
+    if (!isDemoMode) {
+      let active = true;
+      getAdminPlatformState()
+        .then((next) => {
+          if (!active) return;
+          setState(next);
+          setSelectedProjectId(next.projects[0]?.id || null);
+        })
+        .catch((error) => active && setLoadError(error.message || "No fue posible cargar los proyectos."))
+        .finally(() => active && setLoading(false));
+      return () => { active = false; };
+    }
+    return undefined;
+  }, [isDemoMode]);
+
   if (profile?.rol !== "super_admin") return <main className="state-page"><ShieldCheck size={42} /><h1>Área reservada</h1><p>Esta sección solamente está disponible para RCM Code Dev.</p><Link className="button button--dark" to="/panel">Volver al panel</Link></main>;
-  if (!isDemoMode) return <main className="state-page"><ShieldCheck size={42} /><h1>RCM Super Admin</h1><p>La prueba de asignación local está disponible al activar VITE_DEMO_MODE.</p><Link className="button button--dark" to="/panel">Ir al panel</Link></main>;
+  if (loading) return <main className="state-page"><span className="loader" /><h1>Cargando proyectos…</h1></main>;
+  if (loadError) return <main className="state-page"><ShieldCheck size={42} /><h1>No fue posible cargar el panel</h1><p>{loadError}</p><Link className="button button--dark" to="/panel">Ir al panel</Link></main>;
 
   function flash(message) {
     setNotice(message);
     window.setTimeout(() => setNotice(""), 2600);
   }
 
-  function choosePackage(packageKey) {
-    const next = updateDemoProject(selectedProject.id, { packageKey, featureOverrides: {} });
-    setState(next);
+  async function choosePackage(packageKey) {
+    if (isDemoMode) {
+      setState(updateDemoProject(selectedProject.id, { packageKey, featureOverrides: {} }));
+    } else {
+      await updateAdminProject(selectedProject.id, { packageKey, featureOverrides: {} });
+      await refresh();
+    }
     flash(`Paquete de ${selectedProject.name} actualizado correctamente.`);
   }
 
-  function toggleFeature(key) {
+  async function toggleFeature(key) {
     const base = resolvePackage(selectedProject.packageKey).features[key];
     const effective = entitlement.features[key];
     const overrides = { ...(selectedProject.featureOverrides || {}) };
     if (!effective === base) delete overrides[key];
     else overrides[key] = !effective;
-    const next = updateDemoProject(selectedProject.id, { featureOverrides: overrides });
-    setState(next);
+    if (isDemoMode) {
+      setState(updateDemoProject(selectedProject.id, { featureOverrides: overrides }));
+    } else {
+      await updateAdminProject(selectedProject.id, { featureOverrides: overrides });
+      await refresh();
+    }
   }
 
-  function saveClient(event) {
+  async function saveClient(event) {
     event.preventDefault();
     if (!selectedProject.clientName?.trim() || !selectedProject.clientEmail?.trim() || selectedProject.clientPassword?.length < 6) {
       flash("Completa el nombre, correo y una contraseña de al menos 6 caracteres.");
       return;
     }
-    setState(updateDemoProject(selectedProject.id, { clientName: selectedProject.clientName.trim(), clientEmail: selectedProject.clientEmail.trim().toLowerCase(), clientPassword: selectedProject.clientPassword }));
+    if (isDemoMode) {
+      setState(updateDemoProject(selectedProject.id, { clientName: selectedProject.clientName.trim(), clientEmail: selectedProject.clientEmail.trim().toLowerCase(), clientPassword: selectedProject.clientPassword }));
+    } else {
+      await updateAdminClient({ clientName: selectedProject.clientName.trim(), clientEmail: selectedProject.clientEmail.trim().toLowerCase(), clientPassword: selectedProject.clientPassword });
+      await refresh();
+    }
     flash(`Acceso de ${selectedProject.name} guardado correctamente.`);
   }
 
@@ -54,10 +101,22 @@ export default function AdminPage() {
     setState((current) => ({ ...current, projects: current.projects.map((project) => project.id === selectedProject.id ? { ...project, ...updates } : project) }));
   }
 
-  function createProject(event) {
+  async function createProject(event) {
     event.preventDefault();
-    try { const next = createDemoProject(projectForm); const created = next.projects.at(-1); setState(next); setSelectedProjectId(created.id); setProjectForm(emptyProject); flash(projectForm.invitationUrl ? "Invitación liberada y seleccionada para administrar." : "Proyecto guardado y seleccionado para administrar."); }
-    catch (error) { flash(error.message); }
+    try {
+      if (isDemoMode) {
+        const next = createDemoProject(projectForm);
+        const created = next.projects.at(-1);
+        setState(next);
+        setSelectedProjectId(created.id);
+      } else {
+        const created = await createAdminProject(projectForm);
+        await refresh();
+        setSelectedProjectId(created.id);
+      }
+      setProjectForm(emptyProject);
+      flash(projectForm.invitationUrl ? "Invitación liberada y seleccionada para administrar." : "Proyecto guardado y seleccionado para administrar.");
+    } catch (error) { flash(error.message); }
   }
 
   async function leave() {
@@ -95,6 +154,6 @@ export default function AdminPage() {
       <header><div><span>04</span><div><h2>Acceso de {selectedProject.name}</h2><p>Estas credenciales abren únicamente el panel del evento seleccionado.</p></div></div></header>
       <form className="client-access-form" onSubmit={saveClient}><label>Nombre del cliente<input value={selectedProject.clientName || ""} onChange={(event) => editSelectedProject({ clientName: event.target.value })} /></label><label>Correo de acceso<input type="email" value={selectedProject.clientEmail || ""} onChange={(event) => editSelectedProject({ clientEmail: event.target.value })} /></label><label>Contraseña temporal<input value={selectedProject.clientPassword || ""} onChange={(event) => editSelectedProject({ clientPassword: event.target.value })} /></label><button className="button button--dark" type="submit"><Save size={17} /> Guardar acceso</button></form>
     </section>
-    <footer className="admin-console__footer"><p>Los cambios de esta prueba se guardan únicamente en este navegador.</p><button type="button" onClick={() => { const next = resetDemoPlatform(); setState(next); flash("La demostración volvió a su configuración inicial."); }}><RotateCcw size={16} /> Restablecer demostración</button></footer>
+    <footer className="admin-console__footer"><p>{isDemoMode ? "Los cambios de esta prueba se guardan únicamente en este navegador." : "Los cambios se guardan directamente en tu base de datos de Supabase."}</p>{isDemoMode && <button type="button" onClick={() => { const next = resetDemoPlatform(); setState(next); flash("La demostración volvió a su configuración inicial."); }}><RotateCcw size={16} /> Restablecer demostración</button>}</footer>
   </main>;
 }
