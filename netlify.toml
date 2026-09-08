@@ -6,6 +6,8 @@
   NODE_VERSION = "22"
   VITE_DEMO_MODE = "false"
   VITE_PUBLIC_SITE_URL = "https://rcm-invitaciones.netlify.app"
+  VITE_SUPABASE_URL = "https://gwngxpzyfmghierwoujr.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "sb_publishable_7UcGeXtzYpV3MlDjC071AQ_EdAOu-C0"
 
 [dev]
   command = "npm run dev"
