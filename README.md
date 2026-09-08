@@ -13,7 +13,7 @@ npm run dev
 Con `VITE_DEMO_MODE=true`, la aplicación carga la demostración local aunque también existan credenciales de Supabase. El paquete, los extras y las credenciales del cliente se guardan localmente en el navegador para realizar pruebas. Con `VITE_DEMO_MODE=false`, el acceso utiliza únicamente los usuarios reales creados en Supabase.
 
 - Sitio: `http://localhost:5173`
-- Invitación de muestra: `http://localhost:5173/evento/dulce-eduardo/A7X92`
+- Invitación personalizada: agrega el primer invitado desde `/panel/invitados` y abre el enlace que genera el sistema.
 - Login: `http://localhost:5173/login`
 - Administrador RCM: `admin@rcminvitaciones.com` / `admin2026`
 - Cliente: `demo@rcminvitaciones.com` / `demostracion`

@@ -5,37 +5,6 @@ import {
   saveLocalPhotos,
 } from "./localAlbumService";
 
-export const sampleAlbumPhotos = [
-  {
-    id: "sample-1",
-    url: "/images/dulce-eduardo-album-destacada.jpg",
-    author: "Eduardo y Dulce",
-    createdAt: "2026-11-28T21:15:00-06:00",
-    sample: true,
-  },
-  {
-    id: "sample-2",
-    url: "/images/dulce-eduardo-historia-02.jpg",
-    author: "Amigos de los novios",
-    createdAt: "2026-11-28T20:48:00-06:00",
-    sample: true,
-  },
-  {
-    id: "sample-3",
-    url: "/images/dulce-eduardo-historia-03.jpg",
-    author: "Familia Hernández",
-    createdAt: "2026-11-28T19:32:00-06:00",
-    sample: true,
-  },
-  {
-    id: "sample-4",
-    url: "/images/dulce-eduardo-historia-05.jpg",
-    author: "Eduardo y Dulce",
-    createdAt: "2026-11-28T18:10:00-06:00",
-    sample: true,
-  },
-];
-
 const ALLOWED_MEDIA_TYPES = new Set([
   "image/jpeg", "image/png", "image/webp", "image/gif",
   "video/mp4", "video/webm", "video/quicktime",
@@ -48,24 +17,18 @@ export function isVideoMedia(media) {
   return mimeType.startsWith("video/") || /\.(mp4|webm|mov)(?:$|\?)/i.test(media?.url || "");
 }
 
-const samplesFor = (event) =>
-  event.slug === "dulce-eduardo" ? sampleAlbumPhotos : [];
-
 export async function listAlbumPhotos(event, guest, page = 0) {
   if (!isSupabaseConfigured) {
     const albumKey = `${event.id}:${event.slug}`;
     const local = await listLocalPhotos(albumKey);
     return {
       shared: false,
-      photos: [
-        ...local.map((photo) => ({
-          ...photo,
-          author: photo.author,
-          createdAt: photo.createdAt,
-          local: true,
-        })),
-        ...samplesFor(event),
-      ],
+      photos: local.map((photo) => ({
+        ...photo,
+        author: photo.author,
+        createdAt: photo.createdAt,
+        local: true,
+      })),
     };
   }
 
@@ -87,12 +50,12 @@ export async function listAlbumPhotos(event, guest, page = 0) {
   return {
     shared: true,
     hasMore: Boolean(data?.hasMore),
-    photos: [...uploaded, ...(page === 0 ? samplesFor(event) : [])],
+    photos: uploaded,
   };
 }
 
 export async function listOwnerAlbumPhotos(event) {
-  if (!isSupabaseConfigured) return listAlbumPhotos(event, { code: "A7X92" });
+  if (!isSupabaseConfigured) return listAlbumPhotos(event, { code: "" });
   const client = requireSupabase();
   const { data, error } = await client
     .from("album_photos")

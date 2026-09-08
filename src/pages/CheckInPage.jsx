@@ -193,7 +193,7 @@ export default function CheckInPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter") findGuest();
             }}
-            placeholder="A7X92"
+            placeholder="Código del invitado"
           />
           <button
             className="button button--dark"

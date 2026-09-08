@@ -34,12 +34,12 @@ export default function GuestForm({ guest, onSave, onClose, saving }) {
         </header>
         <form onSubmit={submit}>
           {error && <div className="error-callout">{error}</div>}
-          <label>Nombre / Familia *<input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Familia Hernández" /></label>
+          <label>Nombre / Familia *<input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre del invitado o familia" /></label>
           <div className="form-grid">
             <label>Teléfono<input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="524621234567" /></label>
             <label>Número de pases *<input type="number" min="1" value={form.passes} onChange={(e) => setForm({ ...form, passes: e.target.value })} /></label>
           </div>
-          <label>Mesa <small>Opcional</small><input value={form.table_name} onChange={(e) => setForm({ ...form, table_name: e.target.value })} placeholder="Mesa 4" /></label>
+          <label>Mesa <small>Opcional</small><input value={form.table_name} onChange={(e) => setForm({ ...form, table_name: e.target.value })} placeholder="Número o nombre de mesa" /></label>
           <label>Observaciones <small>Opcional</small><textarea rows="3" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></label>
           <footer>
             <button className="button button--light" type="button" onClick={onClose}>Cancelar</button>

@@ -1,7 +1,7 @@
 import { demoEvent } from "../data/demoData";
 import { getPackage, resolvePackage } from "../data/packageCatalog";
 
-const STORAGE_KEY = "rcm-demo-platform-v1";
+const STORAGE_KEY = "rcm-demo-platform-v2";
 const CHANGE_EVENT = "rcm-demo-platform-change";
 const DEMO_ADMIN_ACCOUNT = { id: "demo-admin", label: "Administrador RCM", email: "admin@rcminvitaciones.com", password: "admin2026", role: "super_admin" };
 const DULCE_MANAGEMENT_FEATURES = {
@@ -23,7 +23,7 @@ const initialState = {
   featureOverrides: DULCE_MANAGEMENT_FEATURES,
   eventOverrides: {},
   projects: [
-    { id: demoEvent.id, name: "Eduardo y Dulce", slug: "dulce-eduardo", eventType: "Boda", date: "2026-11-28", clientName: "Eduardo y Dulce", clientEmail: "demo@rcminvitaciones.com", clientPassword: "demostracion", packageKey: "elegante-900", featureOverrides: DULCE_MANAGEMENT_FEATURES, status: "published", designKey: "elegante-clasica", invitationUrl: "/evento/dulce-eduardo/A7X92" },
+    { id: demoEvent.id, name: "Eduardo y Dulce", slug: "dulce-eduardo", eventType: "Boda", date: "2026-11-28", clientName: "Eduardo y Dulce", clientEmail: "demo@rcminvitaciones.com", clientPassword: "demostracion", packageKey: "elegante-900", featureOverrides: DULCE_MANAGEMENT_FEATURES, status: "design", designKey: "elegante-clasica", invitationUrl: "" },
     { id: "22222222-2222-4222-8222-222222222222", name: "Valentina Isabella", slug: "valentina-isabella", eventType: "XV años", date: "2026-10-18", clientName: "Valentina y familia", clientEmail: "valentina@rcminvitaciones.com", clientPassword: "valentina2026", packageKey: "vip-5000", status: "published", designKey: "enlace-externo", invitationUrl: "https://prueba-invitacionxv.netlify.app/" }
   ],
   client: {
@@ -49,9 +49,9 @@ function readState() {
       primary.slug = demoEvent.slug;
       primary.date = demoEvent.event_date;
       primary.clientName = "Eduardo y Dulce";
-      primary.status = "published";
+      primary.status = primary.invitationUrl ? "published" : "design";
       primary.designKey = "elegante-clasica";
-      primary.invitationUrl = `/evento/${demoEvent.slug}/A7X92`;
+      primary.invitationUrl = primary.invitationUrl || "";
       primary.featureOverrides = { ...DULCE_MANAGEMENT_FEATURES, ...(primary.featureOverrides || {}) };
     }
     return {

@@ -73,7 +73,7 @@ export default function AdminPage() {
     </header>
     <section className="admin-hero">
       <div><span className="page-eyebrow">Administrando evento seleccionado</span><h1>{selectedProject.name}</h1><p>Tú conservas el control del diseño. Aquí asignas el paquete, activas extras y preparas el acceso del cliente.</p></div>
-      <div className="admin-hero__actions"><a className="button button--light" href={selectedProject.invitationUrl || `/evento/${selectedProject.slug}/A7X92`} target="_blank" rel="noreferrer"><ExternalLink size={17} /> Ver invitación</a><button className="button button--gold" type="button" onClick={leave}><Users size={17} /> Salir y probar como cliente</button></div>
+      <div className="admin-hero__actions">{selectedProject.invitationUrl ? <a className="button button--light" href={selectedProject.invitationUrl} target="_blank" rel="noreferrer"><ExternalLink size={17} /> Ver invitación</a> : <span className="project-pending">Sin enlace público</span>}<button className="button button--gold" type="button" onClick={leave}><Users size={17} /> Salir y probar como cliente</button></div>
     </section>
     <section className="admin-overview"><article><FolderKanban /><span>Eventos totales<strong>{state.projects.length}</strong></span></article><article><CalendarDays /><span>Publicados<strong>{state.projects.filter((project) => project.status === "published").length}</strong></span></article><article><Users /><span>Clientes registrados<strong>{new Set(state.projects.map((project) => project.clientEmail)).size}</strong></span></article><article><Sparkles /><span>En diseño<strong>{state.projects.filter((project) => project.status === "design").length}</strong></span></article></section>
     <section className="admin-section">

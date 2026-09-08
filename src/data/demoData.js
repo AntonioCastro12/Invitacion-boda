@@ -65,48 +65,7 @@ export const demoEvent = {
   ],
 };
 
-export const demoGuests = [
-  {
-    id: "g1",
-    event_id: demoEvent.id,
-    name: "Familia Hernández",
-    phone: "524621234567",
-    passes: 4,
-    code: "A7X92",
-    table_name: "Mesa 4",
-    notes: "",
-  },
-  {
-    id: "g2",
-    event_id: demoEvent.id,
-    name: "Familia Castro Cuevas",
-    phone: "524621112233",
-    passes: 5,
-    code: "B8K31",
-    table_name: "Mesa 2",
-    notes: "Familia de la novia",
-  },
-  {
-    id: "g3",
-    event_id: demoEvent.id,
-    name: "María López",
-    phone: "524621223344",
-    passes: 2,
-    code: "D9P21",
-    table_name: "Mesa 6",
-    notes: "",
-  },
-  {
-    id: "g4",
-    event_id: demoEvent.id,
-    name: "José Ramírez",
-    phone: "524621334455",
-    passes: 1,
-    code: "F4M67",
-    table_name: "Mesa 7",
-    notes: "",
-  },
-];
+export const demoGuests = [];
 
 export const demoProfile = {
   id: "demo-client",

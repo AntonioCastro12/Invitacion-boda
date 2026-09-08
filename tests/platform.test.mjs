@@ -170,7 +170,7 @@ test("ofrece un álbum independiente mediante botón y QR con respaldo local", a
   assert.match(service, /maxItems: null/);
 });
 
-test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes", async () => {
+test("comparte un álbum inicialmente vacío mediante Supabase", async () => {
   const [service, preview, page, migration] = await Promise.all([
     read("src/services/albumService.js"),
     read("src/components/invitation/CollaborativeAlbum.jsx"),
@@ -181,8 +181,8 @@ test("comparte el álbum mediante Supabase y muestra las cuatro fotos recientes"
   assert.match(service, /submit_album_photo/);
   assert.match(service, /event-albums/);
   assert.match(service, /isVideoMedia/);
-  assert.match(service, /dulce-eduardo-album-destacada\.jpg/);
-  assert.match(service, /author: "Eduardo y Dulce"/);
+  assert.doesNotMatch(service, /sampleAlbumPhotos/);
+  assert.match(preview, /useState\(\[\]\)/);
   assert.match(preview, /photos\.slice\(0, 4\)/);
   assert.match(page, /album-social-feed/);
   assert.match(migration, /enable row level security/);
