@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import { getDemoLoginAccounts } from "../services/demoPlatformService";
 
 export default function LoginPage() {
-  const { session, loading, signIn, isDemoMode } = useAuth();
+  const { session, profile, loading, signIn, isDemoMode } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const demoAccounts = isDemoMode ? getDemoLoginAccounts() : [];
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: defaultDemoAccount?.email || "", password: defaultDemoAccount?.password || "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  if (!loading && session) return <Navigate to={session.profile?.rol === "super_admin" ? "/admin" : "/panel"} replace />;
+  if (!loading && session) return <Navigate to={profile?.rol === "super_admin" ? "/admin" : "/panel"} replace />;
 
   async function submit(e) {
     e.preventDefault(); setError(""); setSubmitting(true);

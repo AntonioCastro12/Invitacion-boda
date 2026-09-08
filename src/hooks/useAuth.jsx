@@ -4,9 +4,20 @@ import { isDemoMode, supabase } from "../services/supabase";
 
 const AuthContext = createContext(null);
 
+async function fetchProfile(userId) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, nombre, email, rol")
+    .eq("id", userId)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(isDemoMode || !supabase ? null : undefined);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState(isDemoMode || !supabase ? null : undefined);
 
   useEffect(() => {
     if (isDemoMode || !supabase) return undefined;
@@ -28,7 +39,12 @@ export function AuthProvider({ children }) {
       setProfile(null);
       return;
     }
-    supabase.from("profiles").select("*").eq("id", session.user.id).maybeSingle().then(({ data }) => setProfile(data));
+    let active = true;
+    setProfile(undefined);
+    fetchProfile(session.user.id)
+      .then((data) => active && setProfile(data))
+      .catch(() => active && setProfile(null));
+    return () => { active = false; };
   }, [session]);
 
   async function signIn(email, password) {
@@ -39,9 +55,12 @@ export function AuthProvider({ children }) {
       return nextProfile;
     }
     if (!supabase) throw new Error("El acceso real necesita las variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY. Para usar las cuentas de muestra, activa VITE_DEMO_MODE=true.");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    return null;
+    const signedProfile = await fetchProfile(data.user.id);
+    setSession(data.session);
+    setProfile(signedProfile);
+    return signedProfile;
   }
 
   async function signOut() {
@@ -49,7 +68,8 @@ export function AuthProvider({ children }) {
     else if (supabase) await supabase.auth.signOut();
   }
 
-  const value = useMemo(() => ({ session, profile, loading: session === undefined, signIn, signOut, isDemoMode }), [session, profile]);
+  const loading = session === undefined || Boolean(session?.user && profile === undefined);
+  const value = useMemo(() => ({ session, profile, loading, signIn, signOut, isDemoMode }), [session, profile, loading]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
