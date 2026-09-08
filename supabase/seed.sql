@@ -1,7 +1,7 @@
 -- 1) Crea primero este usuario desde Authentication > Users en Supabase:
 --    dulce.eduardo@rcminvitaciones.com
 -- 2) Después ejecuta este archivo en SQL Editor.
--- Crea el evento sin invitados ni contenido del álbum. Los invitados se agregan desde el panel.
+--3)EduardoDulce2026
 do $$
 declare
   client_uuid uuid;
@@ -49,6 +49,14 @@ begin
     itinerary = excluded.itinerary,
     gift_registry = excluded.gift_registry,
     updated_at = now();
+
+  insert into public.guests (event_id, name, phone, passes, code, table_name, notes) values
+    (event_uuid, 'Familia Hernández', '524621234567', 4, 'A7X92', 'Mesa 4', null),
+    (event_uuid, 'Familia Castro Cuevas', '524621112233', 5, 'B8K31', 'Mesa 2', 'Familia de la novia'),
+    (event_uuid, 'María López', '524621223344', 2, 'D9P21', 'Mesa 6', null),
+    (event_uuid, 'José Ramírez', '524621334455', 1, 'F4M67', 'Mesa 7', null)
+  on conflict (code) do update set name = excluded.name, phone = excluded.phone,
+    passes = excluded.passes, table_name = excluded.table_name, notes = excluded.notes;
 
   insert into public.event_entitlements (event_id, plan_key, feature_overrides)
   values (

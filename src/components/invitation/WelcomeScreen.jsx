@@ -6,7 +6,7 @@ const LAST_STAGE = 3;
 const elegantEase = [0.22, 1, 0.36, 1];
 
 function coupleNames(name = "") {
-  const [first = "RCM", second = "Invitaciones"] = name.split(/\s*&\s*/);
+  const [first = "RCM", second = "Invitaciones"] = name.split(/\s+(?:&|y)\s+/i);
   return { first: first.trim(), second: second.trim() };
 }
 
