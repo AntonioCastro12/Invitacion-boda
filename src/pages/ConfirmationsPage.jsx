@@ -7,10 +7,20 @@ import { listRsvps } from "../services/rsvpService";
 
 const statusLabel = { confirmed: "Confirmado", declined: "No asistirá", pending: "Pendiente" };
 
-function csvCell(value) {
+function excelCell(value) {
   const text = String(value ?? "");
   const safe = /^[=+\-@]/.test(text) ? `'${text}` : text;
-  return `"${safe.replaceAll('"', '""')}"`;
+  return safe.replace(/[\t\r\n]+/g, " ");
+}
+
+function unicodeExcelBlob(value) {
+  const buffer = new ArrayBuffer(2 + value.length * 2);
+  const view = new DataView(buffer);
+  view.setUint16(0, 0xfeff, true);
+  for (let index = 0; index < value.length; index += 1) {
+    view.setUint16(2 + index * 2, value.charCodeAt(index), true);
+  }
+  return new Blob([buffer], { type: "text/tab-separated-values;charset=utf-16le" });
 }
 
 export default function ConfirmationsPage() {
@@ -39,8 +49,8 @@ export default function ConfirmationsPage() {
   function exportExcel() {
     const headers = ["Familia o invitado", "Teléfono", "Lugares asignados", "Lugares confirmados", "Mensaje", "Última actualización"];
     const data = confirmed.map((row) => [row.guest.name, row.guest.phone || "", row.guest.passes, row.attendees, row.message || "", row.updated_at ? new Date(row.updated_at).toLocaleString("es-MX") : ""]);
-    const csv = `sep=,\r\n${[headers, ...data].map((line) => line.map(csvCell).join(",")).join("\r\n")}`;
-    const url = URL.createObjectURL(new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" }));
+    const excelText = `sep=\t\r\n${[headers, ...data].map((line) => line.map(excelCell).join("\t")).join("\r\n")}`;
+    const url = URL.createObjectURL(unicodeExcelBlob(excelText));
     const link = document.createElement("a");
     link.href = url;
     link.download = `confirmaciones-${event.slug}.csv`;

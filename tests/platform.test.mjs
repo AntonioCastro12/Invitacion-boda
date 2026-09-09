@@ -316,6 +316,8 @@ test("exporta confirmaciones para Excel y actualiza la lista automáticamente", 
   assert.match(page, /Lugares confirmados/);
   assert.match(page, /setInterval\(load, 15000\)/);
   assert.match(page, /confirmaciones-\$\{event\.slug\}\.csv/);
+  assert.match(page, /charset=utf-16le/);
+  assert.match(page, /setUint16\(0, 0xfeff, true\)/);
   assert.match(confirmation, /await submitRsvp\(event, guest, form\)/);
   assert.match(confirmation, /window\.location\.assign/);
 });
