@@ -366,9 +366,19 @@
 }
 
 .theme-dulce-eduardo .story-section,
+.theme-dulce-eduardo .family-honors,
 .theme-dulce-eduardo .rsvp-section,
 .theme-dulce-eduardo .album-section {
   background: #f8ecd4;
+}
+
+.theme-dulce-eduardo .family-honors__grid article {
+  border-color: rgba(132, 116, 0, 0.32);
+  background: rgba(255, 253, 247, 0.88);
+}
+
+.theme-dulce-eduardo .family-honors__grid span {
+  color: var(--wedding-orange);
 }
 
 .theme-dulce-eduardo .story-carousel__viewport {

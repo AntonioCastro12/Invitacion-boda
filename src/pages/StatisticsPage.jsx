@@ -13,8 +13,9 @@ const csvCell = (value) => {
 };
 
 const phoneCsvCell = (value) => {
-  const text = String(value ?? "").replace(/[\t\r\n]+/g, " ");
-  return text ? `"'${text.replaceAll('"', '""')}"` : '""';
+  const digits = String(value ?? "").replace(/\D/g, "");
+  const formula = digits ? `="${digits}"` : "";
+  return `"${formula.replaceAll('"', '""')}"`;
 };
 
 export default function StatisticsPage() {
@@ -40,13 +41,15 @@ export default function StatisticsPage() {
     const confirmed = confirmedRows.reduce((sum, item) => sum + Number(item.attendees || 0), 0);
     const entered = checkIns.reduce((sum, item) => sum + Number(item.attendees || 0), 0);
     const answered = rsvps.filter((item) => item.status !== "pending").length;
-    return { assigned, confirmed, entered, answered, pending: rsvps.filter((item) => item.status === "pending").length, declined: rsvps.filter((item) => item.status === "declined").length, responseRate: guests.length ? Math.round((answered / guests.length) * 100) : 0, entryRate: confirmed ? Math.min(100, Math.round((entered / confirmed) * 100)) : 0 };
+    const children = confirmedRows.reduce((sum, item) => sum + Number(item.children || 0), 0);
+    const adults = confirmedRows.reduce((sum, item) => sum + Number(item.adults || item.attendees || 0), 0);
+    return { assigned, confirmed, entered, answered, pending: rsvps.filter((item) => item.status === "pending").length, declined: rsvps.filter((item) => item.status === "declined").length, responseRate: guests.length ? Math.round((answered / guests.length) * 100) : 0, entryRate: confirmed ? Math.min(100, Math.round((entered / confirmed) * 100)) : 0, adults, children };
   }, [checkIns, guests, rsvps]);
 
   const rsvpByGuest = useMemo(() => new Map(rsvps.map((item) => [item.guest.id, item])), [rsvps]);
   const checkInByGuest = useMemo(() => new Map(checkIns.map((item) => [item.guest_id, item])), [checkIns]);
   const activity = useMemo(() => [
-    ...rsvps.filter((item) => item.updated_at).map((item) => ({ id: `r-${item.guest.id}`, at: item.updated_at, title: item.guest.name, detail: item.status === "confirmed" ? `Confirmó ${item.attendees} asistentes` : "Indicó que no asistirá" })),
+    ...rsvps.filter((item) => item.updated_at).map((item) => ({ id: `r-${item.guest.id}`, at: item.updated_at, title: item.guest.name, detail: item.status === "confirmed" ? `Confirmó ${item.adults ?? item.attendees} adultos y ${item.children ?? 0} niños` : "Indicó que no asistirá" })),
     ...checkIns.map((item) => ({ id: `c-${item.id}`, at: item.checked_in_at, title: item.guest.name, detail: `Entrada registrada: ${item.attendees} personas` }))
   ].sort((a, b) => new Date(b.at) - new Date(a.at)).slice(0, 10), [checkIns, rsvps]);
 
@@ -54,16 +57,16 @@ export default function StatisticsPage() {
   if (!event.features?.statistics) return <section className="locked-feature"><span>Función avanzada</span><h1>Estadísticas del evento</h1><p>El reporte operativo y los indicadores están disponibles en Premium Plus y VIP.</p><Link className="button button--dark" to="/panel">Volver al dashboard</Link></section>;
 
   function exportCsv() {
-    const header = ["Familia", "Teléfono", "Pases", "Código", "Estado de confirmación", "Asistentes confirmados", "Personas ingresadas", "Hora de entrada"];
-    const rows = guests.map((guest) => { const rsvp = rsvpByGuest.get(guest.id); const checkIn = checkInByGuest.get(guest.id); return [guest.name, phoneCsvCell(guest.phone), guest.passes, guest.code, rsvp?.status || "pending", rsvp?.attendees ?? "", checkIn?.attendees ?? "", checkIn?.checked_in_at || ""].map((cell, index) => index === 1 ? cell : csvCell(cell)); });
-    const csv = `\uFEFF${[header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+    const header = ["Familia", "Teléfono", "Pases", "Código", "Estado de confirmación", "Adultos", "Niños", "Asistentes confirmados", "Personas ingresadas", "Hora de entrada"];
+    const rows = guests.map((guest) => { const rsvp = rsvpByGuest.get(guest.id); const checkIn = checkInByGuest.get(guest.id); return [guest.name, guest.phone, guest.passes, guest.code, rsvp?.status || "pending", rsvp?.adults ?? "", rsvp?.children ?? "", rsvp?.attendees ?? "", checkIn?.attendees ?? "", checkIn?.checked_in_at || ""]; });
+    const csv = `\uFEFF${header.map(csvCell).join(",")}\r\n${rows.map((row) => row.map((cell, index) => index === 1 ? phoneCsvCell(cell) : csvCell(cell)).join(",")).join("\r\n")}`;
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${event.slug}-reporte.csv`; anchor.click(); URL.revokeObjectURL(url);
     setNotice("Reporte CSV descargado correctamente.");
   }
 
   async function copySummary() {
-    const summary = `${event.name}\nFamilias: ${guests.length}\nPases asignados: ${metrics.assigned}\nAsistentes confirmados: ${metrics.confirmed}\nPersonas que ingresaron: ${metrics.entered}\nRespuesta: ${metrics.responseRate}%`;
+    const summary = `${event.name}\nFamilias: ${guests.length}\nPases asignados: ${metrics.assigned}\nAdultos confirmados: ${metrics.adults}\nNiños confirmados: ${metrics.children}\nAsistentes confirmados: ${metrics.confirmed}\nPersonas que ingresaron: ${metrics.entered}\nRespuesta: ${metrics.responseRate}%`;
     try { await navigator.clipboard.writeText(summary); setNotice("Resumen copiado correctamente."); }
     catch { setNotice("No fue posible copiar el resumen en este navegador."); }
   }

@@ -158,6 +158,16 @@
 .rsvp-section--embedded > p:not(.section-intro) { max-width: 360px; margin: 0 auto 1.3rem; color: var(--muted); font-size: .82rem; line-height: 1.6; }
 .rsvp-section--embedded .rsvp-form { margin: 0; padding: 1.2rem; border: 0; border-radius: 18px; background: color-mix(in srgb, var(--ivory) 68%, white); box-shadow: none; text-align: left; }
 .rsvp-section--embedded .rsvp-form .button { width: 100%; }
+.rsvp-guests { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.rsvp-guests label { display: grid; gap: .4rem; }
+.rsvp-guests__example { margin: .15rem 0 .05rem; color: var(--muted); font-size: .76rem; text-align: left; }
+.rsvp-deadline { width: fit-content; margin: .5rem auto 1rem !important; padding: .65rem .9rem; border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--champagne) 13%, white); color: var(--olive) !important; font-size: .78rem !important; }
+.family-honors { background: linear-gradient(180deg, var(--paper), color-mix(in srgb, var(--ivory) 72%, white)); }
+.family-honors__grid { display: grid; gap: 1rem; width: min(100%, 470px); margin: 1.8rem auto 0; }
+.family-honors__grid article { position: relative; display: grid; gap: .28rem; padding: 1.25rem 1rem; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--paper) 88%, transparent); box-shadow: 0 12px 35px rgba(45,61,51,.07); }
+.family-honors__grid article::before { content: ""; position: absolute; top: 0; left: 50%; width: 54px; height: 2px; background: var(--gold); transform: translate(-50%, -1px); }
+.family-honors__grid span { margin-bottom: .35rem; color: var(--gold); font-size: .67rem; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
+.family-honors__grid strong { color: var(--ink); font-family: "Cormorant Garamond", serif; font-size: clamp(1.25rem, 5vw, 1.65rem); font-weight: 500; line-height: 1.15; }
 .confirmation-help { margin: .2rem 0 -.25rem; color: var(--muted); font-size: .8rem; text-align: center; }
 .confirmation-actions { display: grid; gap: .7rem; }
 .confirmation-actions .button { display: flex; min-height: 52px; flex-wrap: wrap; justify-content: center; }

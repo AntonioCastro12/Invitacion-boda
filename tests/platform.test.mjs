@@ -318,8 +318,29 @@ test("exporta confirmaciones para Excel y actualiza la lista automáticamente", 
   assert.match(page, /confirmaciones-\$\{event\.slug\}\.csv/);
   assert.match(page, /charset=utf-16le/);
   assert.match(page, /setUint16\(0, 0xfeff, true\)/);
+  assert.match(page, /replace\(\/\\D\/g, ""\)/);
+  assert.match(page, /Adultos/);
+  assert.match(page, /Niños/);
   assert.match(confirmation, /await submitRsvp\(event, guest, form\)/);
   assert.match(confirmation, /window\.location\.assign/);
+});
+
+test("muestra familias, fecha límite y desglose de asistentes para Eduardo y Dulce", async () => {
+  const [demo, template, honors, confirmation, migration] = await Promise.all([
+    read("src/data/demoData.js"),
+    read("src/templates/ElegantClassicTemplate.jsx"),
+    read("src/components/invitation/FamilyHonors.jsx"),
+    read("src/components/invitation/WhatsAppConfirmation.jsx"),
+    read("supabase/migrations/20260909100000_rsvp_adults_children.sql")
+  ]);
+  for (const name of ["Raymundo Quiroz Barroso", "Araceli Amador Camacho", "Moisés Moreno Estrada", "Antonia Hernández Soria", "Gildardo Gutiérrez Camacho", "Maricela Franco Vega"]) assert.match(demo, new RegExp(name));
+  assert.match(demo, /rsvp_deadline: "2026-11-01"/);
+  assert.match(template, /FamilyHonors/);
+  assert.match(confirmation, /Favor de confirmar antes del/);
+  assert.match(confirmation, /Adultos/);
+  assert.match(confirmation, /Niños/);
+  assert.match(migration, /add column if not exists adults/);
+  assert.match(migration, /add column if not exists children/);
 });
 
 test("asigna invitaciones externas a clientes sin copiar su diseño", async () => {

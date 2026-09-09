@@ -9,12 +9,18 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
     : [event.whatsapp];
   const [form, setForm] = useState({
     name: guest.name,
-    attendees: guest.passes,
+    adults: guest.passes,
+    children: 0,
     attending: "yes",
     message: "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const deadline = event.template_config?.rsvp_deadline;
+  const deadlineLabel = deadline
+    ? new Intl.DateTimeFormat("es-MX", { day: "2-digit", month: "long", year: "numeric" })
+        .format(new Date(`${deadline}T12:00:00`))
+    : "";
   async function submit(e) {
     e.preventDefault();
     const targetPhone = e.nativeEvent.submitter?.value || confirmationContacts[0];
@@ -22,7 +28,11 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
       form.attending === "yes"
         ? "Sí podremos acompañarlos"
         : "Lamentablemente no podremos asistir";
-    const message = `Hola, somos ${form.name}.\n\n${status} a la boda de ${event.name}.\n\nConfirmamos ${form.attendees} ${Number(form.attendees) === 1 ? "persona" : "personas"}.${form.message ? `\n\nMensaje: ${form.message}` : ""}\n\nGracias.`;
+    const adults = form.attending === "yes" ? Number(form.adults) : 0;
+    const children = form.attending === "yes" ? Number(form.children) : 0;
+    const invitationTotal = `${adults} ${adults === 1 ? "adulto" : "adultos"}${children ? ` y ${children} ${children === 1 ? "niño" : "niños"}` : ""}`;
+    const attendanceDetail = form.attending === "yes" ? `\n\nConfirmamos ${invitationTotal}.` : "";
+    const message = `Hola, somos ${form.name}.\n\n${status} a la boda de ${event.name}.${attendanceDetail}${form.message ? `\n\nMensaje: ${form.message}` : ""}\n\nGracias.`;
     setSaving(true);
     setError("");
     try {
@@ -44,6 +54,7 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
         Completa tus datos y enviaremos tu respuesta a los anfitriones mediante
         WhatsApp.
       </p>
+      {deadlineLabel && <p className="rsvp-deadline">Favor de confirmar antes del <strong>{deadlineLabel}</strong>.</p>}
       {error && <div className="error-callout" role="alert">{error}</div>}
       <form className="rsvp-form" onSubmit={submit}>
         <label>
@@ -54,19 +65,41 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
             required
           />
         </label>
-        <label>
-          Número de invitados
-          <select
-            value={form.attendees}
-            onChange={(e) => setForm({ ...form, attendees: e.target.value })}
-          >
-            {Array.from({ length: guest.passes }, (_, index) => (
-              <option key={index + 1} value={index + 1}>
-                {index + 1}
-              </option>
-            ))}
-          </select>
-        </label>
+        {form.attending === "yes" && <div className="rsvp-guests">
+          <label>
+            Adultos
+            <select
+              value={form.adults}
+              onChange={(e) => setForm({ ...form, adults: e.target.value })}
+            >
+              {Array.from({ length: guest.passes }, (_, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Niños
+            <select
+              value={form.children}
+              onChange={(e) => setForm({ ...form, children: e.target.value })}
+            >
+              {Array.from(
+                { length: Math.max(0, guest.passes - Number(form.adults)) + 1 },
+                (_, index) => (
+                  <option key={index} value={index}>
+                    {index}
+                  </option>
+                ),
+              )}
+            </select>
+          </label>
+        </div>}
+        {form.attending === "yes" && <p className="rsvp-guests__example">
+          Total seleccionado:{" "}
+          {Number(form.adults) + Number(form.children)} de {guest.passes}
+        </p>}
         <fieldset>
           <legend>¿Podrás acompañarnos?</legend>
           <label>

@@ -15,7 +15,8 @@ const DULCE_MANAGEMENT_FEATURES = {
   personalized_passes: true,
   individual_qr: true,
   collaborative_album: true,
-  statistics: true
+  statistics: true,
+  embedded_video: false
 };
 
 const initialState = {

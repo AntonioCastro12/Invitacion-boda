@@ -3,11 +3,15 @@ import { isDemoMode, requireSupabase } from "./supabase";
 const localKey = (eventId, guestId) => `rcm-rsvp-${eventId}-${guestId}`;
 
 export async function submitRsvp(event, guest, values) {
+  const adults = values.attending === "yes" ? Number(values.adults ?? values.attendees ?? 0) : 0;
+  const children = values.attending === "yes" ? Number(values.children ?? 0) : 0;
   const record = {
     event_id: event.id,
     guest_id: guest.id,
     status: values.attending === "yes" ? "confirmed" : "declined",
-    attendees: values.attending === "yes" ? Number(values.attendees) : 0,
+    attendees: adults + children,
+    adults,
+    children,
     message: values.message?.trim() || "",
     updated_at: new Date().toISOString()
   };
@@ -20,7 +24,8 @@ export async function submitRsvp(event, guest, values) {
     p_event_slug: event.slug,
     p_guest_code: guest.code,
     p_status: record.status,
-    p_attendees: record.attendees,
+    p_adults: adults,
+    p_children: children,
     p_message: record.message
   });
   if (error) throw error;
@@ -31,14 +36,14 @@ export async function listRsvps(eventId, guests = []) {
   if (isDemoMode) return guests.map((guest) => {
     try {
       const saved = JSON.parse(window.localStorage.getItem(localKey(eventId, guest.id)) || "null");
-      return { guest, status: saved?.status || "pending", attendees: saved?.attendees ?? null, message: saved?.message || "", updated_at: saved?.updated_at || null };
+      return { guest, status: saved?.status || "pending", attendees: saved?.attendees ?? null, adults: saved?.adults ?? null, children: saved?.children ?? null, message: saved?.message || "", updated_at: saved?.updated_at || null };
     } catch {
-      return { guest, status: "pending", attendees: null, message: "", updated_at: null };
+      return { guest, status: "pending", attendees: null, adults: null, children: null, message: "", updated_at: null };
     }
   });
   const { data, error } = await requireSupabase().from("rsvps").select("*, guest:guests(id,name,passes,phone)").eq("event_id", eventId).order("updated_at", { ascending: false });
   if (error) throw error;
   const byGuest = new Map(data.map((item) => [item.guest_id, item]));
-  return guests.map((guest) => ({ guest, status: byGuest.get(guest.id)?.status || "pending", attendees: byGuest.get(guest.id)?.attendees ?? null, message: byGuest.get(guest.id)?.message || "", updated_at: byGuest.get(guest.id)?.updated_at || null }));
+  return guests.map((guest) => ({ guest, status: byGuest.get(guest.id)?.status || "pending", attendees: byGuest.get(guest.id)?.attendees ?? null, adults: byGuest.get(guest.id)?.adults ?? null, children: byGuest.get(guest.id)?.children ?? null, message: byGuest.get(guest.id)?.message || "", updated_at: byGuest.get(guest.id)?.updated_at || null }));
 }
 

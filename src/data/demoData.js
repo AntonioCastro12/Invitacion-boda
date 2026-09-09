@@ -22,6 +22,13 @@ export const demoEvent = {
     ceremony_image: "/images/templo-hospitalito-sin-persona-optimized.jpg",
     reception_image: "/images/casa-de-adobe-optimized.jpg",
     confirmation_whatsapps: ["+52 1 462 632 1218"],
+    video_enabled: false,
+    rsvp_deadline: "2026-11-01",
+    family_honors: {
+      groom_parents: ["Raymundo Quiroz Barroso", "Araceli Amador Camacho"],
+      bride_parents: ["Moisés Moreno Estrada", "Antonia Hernández Soria"],
+      godparents: ["Gildardo Gutiérrez Camacho", "Maricela Franco Vega"],
+    },
     dress_code: { title: "Formal" },
   },
   price_reference: 900,

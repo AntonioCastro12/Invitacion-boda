@@ -6,6 +6,7 @@ import Countdown from "../components/invitation/Countdown";
 import DressCode from "../components/invitation/DressCode";
 import ElegantOrnaments from "../components/invitation/ElegantOrnaments";
 import FinalMessage from "../components/invitation/FinalMessage";
+import FamilyHonors from "../components/invitation/FamilyHonors";
 import Footer from "../components/invitation/Footer";
 import GiftRegistry from "../components/invitation/GiftRegistry";
 import Hero from "../components/invitation/Hero";
@@ -97,6 +98,11 @@ export default function ElegantClassicTemplate({ event, guest }) {
         aria-hidden={!opened}
       >
         <Hero event={event} opened={opened} />
+        {config.family_honors && (
+          <SectionReveal>
+            <FamilyHonors config={config} />
+          </SectionReveal>
+        )}
         {features.countdown && (
           <SectionReveal>
             <Countdown event={event} />
@@ -107,7 +113,7 @@ export default function ElegantClassicTemplate({ event, guest }) {
             <StoryGallery photos={gallery} />
           </SectionReveal>
         )}
-        {features.embedded_video && (
+        {features.embedded_video && config.video_enabled !== false && (
           <SectionReveal>
             <WeddingVideo
               source={config.video_url}

@@ -4,13 +4,19 @@ import { submitRsvp } from "../../services/rsvpService";
 
 export default function RsvpFormDemo({ event, guest }) {
   const [form, setForm] = useState({
-    attendees: guest.passes,
+    adults: guest.passes,
+    children: 0,
     attending: "yes",
     message: "",
   });
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const deadline = event.template_config?.rsvp_deadline;
+  const deadlineLabel = deadline
+    ? new Intl.DateTimeFormat("es-MX", { day: "2-digit", month: "long", year: "numeric" })
+        .format(new Date(`${deadline}T12:00:00`))
+    : "";
 
   async function submit(eventSubmit) {
     eventSubmit.preventDefault();
@@ -35,6 +41,7 @@ export default function RsvpFormDemo({ event, guest }) {
         Indiquen si podrán asistir y cuántas personas acudirán. La respuesta
         quedará disponible en el panel privado de los anfitriones.
       </p>
+      {deadlineLabel && <p className="rsvp-deadline">Favor de confirmar antes del <strong>{deadlineLabel}</strong>.</p>}
       {error && <div className="error-callout">{error}</div>}
       {saved ? (
         <div className="rsvp-success">
@@ -55,19 +62,41 @@ export default function RsvpFormDemo({ event, guest }) {
             Invitación para
             <input value={guest.name} disabled />
           </label>
-          <label>
-            Número de asistentes
-            <select
-              value={form.attendees}
-              onChange={(e) => setForm({ ...form, attendees: e.target.value })}
-            >
-              {Array.from({ length: guest.passes }, (_, index) => (
-                <option key={index + 1} value={index + 1}>
-                  {index + 1}
-                </option>
-              ))}
-            </select>
-          </label>
+          {form.attending === "yes" && <div className="rsvp-guests">
+            <label>
+              Adultos
+              <select
+                value={form.adults}
+                onChange={(e) => setForm({ ...form, adults: e.target.value })}
+              >
+                {Array.from({ length: guest.passes }, (_, index) => (
+                  <option key={index + 1} value={index + 1}>
+                    {index + 1}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Niños
+              <select
+                value={form.children}
+                onChange={(e) => setForm({ ...form, children: e.target.value })}
+              >
+                {Array.from(
+                  { length: Math.max(0, guest.passes - Number(form.adults)) + 1 },
+                  (_, index) => (
+                    <option key={index} value={index}>
+                      {index}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+          </div>}
+          {form.attending === "yes" && <p className="rsvp-guests__example">
+            Total seleccionado:{" "}
+            {Number(form.adults) + Number(form.children)} de {guest.passes}
+          </p>}
           <fieldset>
             <legend>¿Podrán acompañarnos?</legend>
             <label>

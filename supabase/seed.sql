@@ -22,7 +22,7 @@ begin
   ) values (
     event_uuid, client_uuid, 'Eduardo y Dulce', 'dulce-eduardo', 'Boda', '2026-11-28', '14:00',
     'elegante', 'elegante-clasica',
-    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_url":"/video/eduardo-dulce-montaje.mp4","video_poster":"/images/dulce-eduardo-historia-02.jpg","album_cover":"/images/dulce-eduardo-album-destacada.jpg","ceremony_image":"/images/templo-hospitalito-sin-persona-optimized.jpg","reception_image":"/images/casa-de-adobe-optimized.jpg","confirmation_whatsapps":["+52 1 462 632 1218"],"dress_code":{"title":"Formal"}}'::jsonb,
+    '{"gallery":["/images/dulce-eduardo-historia-01.jpg","/images/dulce-eduardo-historia-02.jpg","/images/dulce-eduardo-historia-03.jpg","/images/dulce-eduardo-historia-04.jpg","/images/dulce-eduardo-historia-05.jpg"],"video_enabled":false,"album_cover":"/images/dulce-eduardo-album-destacada.jpg","ceremony_image":"/images/templo-hospitalito-sin-persona-optimized.jpg","reception_image":"/images/casa-de-adobe-optimized.jpg","confirmation_whatsapps":["+52 1 462 632 1218"],"rsvp_deadline":"2026-11-01","family_honors":{"groom_parents":["Raymundo Quiroz Barroso","Araceli Amador Camacho"],"bride_parents":["Moisés Moreno Estrada","Antonia Hernández Soria"],"godparents":["Gildardo Gutiérrez Camacho","Maricela Franco Vega"]},"dress_code":{"title":"Formal"}}'::jsonb,
     900, '5214626321218', 'Templo Hospitalito',
     'Misa · 2:00 p. m.', null, null,
     'Salón Casa de Adobe', 'Recepción · 4:00 p. m.', null, null,
@@ -54,7 +54,7 @@ begin
   values (
     event_uuid,
     'elegante-900',
-    '{"admin_panel":true,"guest_database":true,"form_rsvp":true,"database_rsvp":true,"confirmation_statuses":true,"pass_count":true,"confirmation_panel":true,"personalized_passes":true,"individual_qr":true,"collaborative_album":true,"statistics":true}'::jsonb
+    '{"admin_panel":true,"guest_database":true,"form_rsvp":true,"database_rsvp":true,"confirmation_statuses":true,"pass_count":true,"confirmation_panel":true,"personalized_passes":true,"individual_qr":true,"collaborative_album":true,"statistics":true,"embedded_video":false}'::jsonb
   )
   on conflict (event_id) do update set
     plan_key = excluded.plan_key,
