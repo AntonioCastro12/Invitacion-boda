@@ -13,6 +13,11 @@ function excelCell(value) {
   return safe.replace(/[\t\r\n]+/g, " ");
 }
 
+function phoneExcelCell(value) {
+  const text = String(value ?? "").replace(/[\t\r\n]+/g, " ");
+  return text ? `'${text}` : "";
+}
+
 function unicodeExcelBlob(value) {
   const buffer = new ArrayBuffer(2 + value.length * 2);
   const view = new DataView(buffer);
@@ -48,7 +53,7 @@ export default function ConfirmationsPage() {
   const passes = confirmed.reduce((total, row) => total + Number(row.attendees || 0), 0);
   function exportExcel() {
     const headers = ["Familia o invitado", "Teléfono", "Lugares asignados", "Lugares confirmados", "Mensaje", "Última actualización"];
-    const data = confirmed.map((row) => [row.guest.name, row.guest.phone || "", row.guest.passes, row.attendees, row.message || "", row.updated_at ? new Date(row.updated_at).toLocaleString("es-MX") : ""]);
+    const data = confirmed.map((row) => [row.guest.name, phoneExcelCell(row.guest.phone), excelCell(row.guest.passes), excelCell(row.attendees), excelCell(row.message), excelCell(row.updated_at ? new Date(row.updated_at).toLocaleString("es-MX") : "")]);
     const excelText = `sep=\t\r\n${[headers, ...data].map((line) => line.map(excelCell).join("\t")).join("\r\n")}`;
     const url = URL.createObjectURL(unicodeExcelBlob(excelText));
     const link = document.createElement("a");

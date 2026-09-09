@@ -12,6 +12,11 @@ const csvCell = (value) => {
   return `"${safe.replaceAll('"', '""')}"`;
 };
 
+const phoneCsvCell = (value) => {
+  const text = String(value ?? "").replace(/[\t\r\n]+/g, " ");
+  return text ? `"'${text.replaceAll('"', '""')}"` : '""';
+};
+
 export default function StatisticsPage() {
   const { event, loading } = useEvent();
   const [guests, setGuests] = useState([]);
@@ -50,7 +55,7 @@ export default function StatisticsPage() {
 
   function exportCsv() {
     const header = ["Familia", "Teléfono", "Pases", "Código", "Estado de confirmación", "Asistentes confirmados", "Personas ingresadas", "Hora de entrada"];
-    const rows = guests.map((guest) => { const rsvp = rsvpByGuest.get(guest.id); const checkIn = checkInByGuest.get(guest.id); return [guest.name, guest.phone, guest.passes, guest.code, rsvp?.status || "pending", rsvp?.attendees ?? "", checkIn?.attendees ?? "", checkIn?.checked_in_at || ""]; });
+    const rows = guests.map((guest) => { const rsvp = rsvpByGuest.get(guest.id); const checkIn = checkInByGuest.get(guest.id); return [guest.name, phoneCsvCell(guest.phone), guest.passes, guest.code, rsvp?.status || "pending", rsvp?.attendees ?? "", checkIn?.attendees ?? "", checkIn?.checked_in_at || ""].map((cell, index) => index === 1 ? cell : csvCell(cell)); });
     const csv = `\uFEFF${[header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${event.slug}-reporte.csv`; anchor.click(); URL.revokeObjectURL(url);
