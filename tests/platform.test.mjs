@@ -88,7 +88,7 @@ test("usa el WhatsApp configurado para las confirmaciones", async () => {
   assert.match(demo, /whatsapp: "5214626321218"/);
   assert.match(demo, /confirmation_whatsapps/);
   assert.match(seed, /'5214626321218'/);
-  assert.match(seed, /5214621070085|\+52 1 462 107 0085/);
+  assert.doesNotMatch(seed, /5214621070085|\+52 1 462 107 0085/);
 });
 
 test("personaliza la boda de Eduardo y Dulce con la información corregida", async () => {
@@ -305,6 +305,14 @@ test("presenta estadísticas y exporta un reporte operativo seguro", async () =>
   assert.match(page, /Pases asignados/);
   assert.match(page, /Movimientos recientes/);
   assert.match(page, /\^\[=\+\\-@\]/);
+});
+
+test("exporta confirmaciones para Excel y actualiza la lista automáticamente", async () => {
+  const page = await read("src/pages/ConfirmationsPage.jsx");
+  assert.match(page, /Descargar Excel/);
+  assert.match(page, /Lugares confirmados/);
+  assert.match(page, /setInterval\(load, 15000\)/);
+  assert.match(page, /confirmaciones-\$\{event\.slug\}\.csv/);
 });
 
 test("asigna invitaciones externas a clientes sin copiar su diseño", async () => {

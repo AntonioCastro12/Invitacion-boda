@@ -21,7 +21,7 @@ export const demoEvent = {
     album_cover: "/images/dulce-eduardo-album-destacada.jpg",
     ceremony_image: "/images/templo-hospitalito-sin-persona-optimized.jpg",
     reception_image: "/images/casa-de-adobe-optimized.jpg",
-    confirmation_whatsapps: ["+52 1 462 632 1218", "+52 1 462 107 0085"],
+    confirmation_whatsapps: ["+52 1 462 632 1218"],
     dress_code: { title: "Formal" },
   },
   price_reference: 900,
