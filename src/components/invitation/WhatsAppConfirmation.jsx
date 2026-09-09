@@ -3,11 +3,15 @@ import { useState } from "react";
 import { createWhatsAppUrl } from "../../utils/whatsapp";
 
 export default function WhatsAppConfirmation({ event, guest, compact = false }) {
+  const confirmationContacts = event.template_config?.confirmation_whatsapps?.length
+    ? event.template_config.confirmation_whatsapps
+    : [event.whatsapp];
   const [form, setForm] = useState({
     name: guest.name,
     attendees: guest.passes,
     attending: "yes",
     message: "",
+    whatsapp: confirmationContacts[0],
   });
   function submit(e) {
     e.preventDefault();
@@ -17,7 +21,7 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
         : "Lamentablemente no podremos asistir";
     const message = `Hola, somos ${form.name}.\n\n${status} a la boda de ${event.name}.\n\nConfirmamos ${form.attendees} ${Number(form.attendees) === 1 ? "persona" : "personas"}.${form.message ? `\n\nMensaje: ${form.message}` : ""}\n\nGracias.`;
     window.open(
-      createWhatsAppUrl(event.whatsapp, message),
+      createWhatsAppUrl(form.whatsapp, message),
       "_blank",
       "noopener,noreferrer",
     );
@@ -84,6 +88,14 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
         </label>
+        {confirmationContacts.length > 1 && <label>
+          Enviar confirmación a
+          <select value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}>
+            {confirmationContacts.map((phone, index) => <option value={phone} key={phone}>
+              WhatsApp {index + 1} · {phone}
+            </option>)}
+          </select>
+        </label>}
         <button className="button button--olive" type="submit">
           <MessageCircle size={18} /> Confirmar asistencia
         </button>

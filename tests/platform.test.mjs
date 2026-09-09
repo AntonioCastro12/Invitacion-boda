@@ -85,8 +85,10 @@ test("nuestra historia funciona como carrusel táctil", async () => {
 
 test("usa el WhatsApp configurado para las confirmaciones", async () => {
   const [demo, seed] = await Promise.all([read("src/data/demoData.js"), read("supabase/seed.sql")]);
-  assert.match(demo, /whatsapp: "5214623105704"/);
-  assert.match(seed, /'5214623105704'/);
+  assert.match(demo, /whatsapp: "5214626321218"/);
+  assert.match(demo, /confirmation_whatsapps/);
+  assert.match(seed, /'5214626321218'/);
+  assert.match(seed, /5214621070085|\+52 1 462 107 0085/);
 });
 
 test("personaliza la boda de Eduardo y Dulce con la información corregida", async () => {
