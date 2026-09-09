@@ -11,17 +11,17 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
     attendees: guest.passes,
     attending: "yes",
     message: "",
-    whatsapp: confirmationContacts[0],
   });
   function submit(e) {
     e.preventDefault();
+    const targetPhone = e.nativeEvent.submitter?.value || confirmationContacts[0];
     const status =
       form.attending === "yes"
         ? "Sí podremos acompañarlos"
         : "Lamentablemente no podremos asistir";
     const message = `Hola, somos ${form.name}.\n\n${status} a la boda de ${event.name}.\n\nConfirmamos ${form.attendees} ${Number(form.attendees) === 1 ? "persona" : "personas"}.${form.message ? `\n\nMensaje: ${form.message}` : ""}\n\nGracias.`;
     window.open(
-      createWhatsAppUrl(form.whatsapp, message),
+      createWhatsAppUrl(targetPhone, message),
       "_blank",
       "noopener,noreferrer",
     );
@@ -88,17 +88,13 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
         </label>
-        {confirmationContacts.length > 1 && <label>
-          Enviar confirmación a
-          <select value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}>
-            {confirmationContacts.map((phone, index) => <option value={phone} key={phone}>
-              WhatsApp {index + 1} · {phone}
-            </option>)}
-          </select>
-        </label>}
-        <button className="button button--olive" type="submit">
-          <MessageCircle size={18} /> Confirmar asistencia
-        </button>
+        {confirmationContacts.length > 1 && <p className="confirmation-help">Envía tu confirmación a nuestros dos contactos:</p>}
+        <div className="confirmation-actions">
+          {confirmationContacts.map((phone, index) => <button className="button button--olive" type="submit" value={phone} key={phone}>
+            <MessageCircle size={18} /> {confirmationContacts.length > 1 ? `WhatsApp ${index + 1}` : "Confirmar asistencia"}
+            {confirmationContacts.length > 1 && <small>{phone}</small>}
+          </button>)}
+        </div>
       </form>
     </section>
   );
