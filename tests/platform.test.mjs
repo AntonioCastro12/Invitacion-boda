@@ -308,11 +308,16 @@ test("presenta estadísticas y exporta un reporte operativo seguro", async () =>
 });
 
 test("exporta confirmaciones para Excel y actualiza la lista automáticamente", async () => {
-  const page = await read("src/pages/ConfirmationsPage.jsx");
+  const [page, confirmation] = await Promise.all([
+    read("src/pages/ConfirmationsPage.jsx"),
+    read("src/components/invitation/WhatsAppConfirmation.jsx")
+  ]);
   assert.match(page, /Descargar Excel/);
   assert.match(page, /Lugares confirmados/);
   assert.match(page, /setInterval\(load, 15000\)/);
   assert.match(page, /confirmaciones-\$\{event\.slug\}\.csv/);
+  assert.match(confirmation, /await submitRsvp\(event, guest, form\)/);
+  assert.match(confirmation, /window\.location\.assign/);
 });
 
 test("asigna invitaciones externas a clientes sin copiar su diseño", async () => {

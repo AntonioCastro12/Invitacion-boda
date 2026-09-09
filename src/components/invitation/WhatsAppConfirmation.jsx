@@ -1,5 +1,6 @@
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
+import { submitRsvp } from "../../services/rsvpService";
 import { createWhatsAppUrl } from "../../utils/whatsapp";
 
 export default function WhatsAppConfirmation({ event, guest, compact = false }) {
@@ -12,7 +13,9 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
     attending: "yes",
     message: "",
   });
-  function submit(e) {
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  async function submit(e) {
     e.preventDefault();
     const targetPhone = e.nativeEvent.submitter?.value || confirmationContacts[0];
     const status =
@@ -20,11 +23,17 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
         ? "Sí podremos acompañarlos"
         : "Lamentablemente no podremos asistir";
     const message = `Hola, somos ${form.name}.\n\n${status} a la boda de ${event.name}.\n\nConfirmamos ${form.attendees} ${Number(form.attendees) === 1 ? "persona" : "personas"}.${form.message ? `\n\nMensaje: ${form.message}` : ""}\n\nGracias.`;
-    window.open(
-      createWhatsAppUrl(targetPhone, message),
-      "_blank",
-      "noopener,noreferrer",
-    );
+    setSaving(true);
+    setError("");
+    try {
+      if (event.features?.database_rsvp || event.features?.form_rsvp) {
+        await submitRsvp(event, guest, form);
+      }
+      window.location.assign(createWhatsAppUrl(targetPhone, message));
+    } catch (reason) {
+      setError(reason.message || "No fue posible guardar la confirmación.");
+      setSaving(false);
+    }
   }
   return (
     <section className={`invitation-section rsvp-section${compact ? " rsvp-section--embedded" : ""}`}>
@@ -35,6 +44,7 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
         Completa tus datos y enviaremos tu respuesta a los anfitriones mediante
         WhatsApp.
       </p>
+      {error && <div className="error-callout" role="alert">{error}</div>}
       <form className="rsvp-form" onSubmit={submit}>
         <label>
           Nombre completo
@@ -90,8 +100,8 @@ export default function WhatsAppConfirmation({ event, guest, compact = false }) 
         </label>
         {confirmationContacts.length > 1 && <p className="confirmation-help">Envía tu confirmación a nuestros dos contactos:</p>}
         <div className="confirmation-actions">
-          {confirmationContacts.map((phone, index) => <button className="button button--olive" type="submit" value={phone} key={phone}>
-            <MessageCircle size={18} /> {confirmationContacts.length > 1 ? `WhatsApp ${index + 1}` : "Confirmar asistencia"}
+          {confirmationContacts.map((phone, index) => <button className="button button--olive" type="submit" value={phone} key={phone} disabled={saving}>
+            <MessageCircle size={18} /> {saving ? "Guardando…" : confirmationContacts.length > 1 ? `WhatsApp ${index + 1}` : "Confirmar asistencia"}
             {confirmationContacts.length > 1 && <small>{phone}</small>}
           </button>)}
         </div>
