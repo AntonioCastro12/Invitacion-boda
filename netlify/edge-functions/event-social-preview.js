@@ -2,9 +2,9 @@ const eventPreviews = {
   "dulce-eduardo": {
     title: "Eduardo & Dulce | Invitación de boda",
     description: "Tenemos algo especial que contarte. Acompáñanos el 28 de noviembre de 2026.",
-    image: "/og-eduardo-dulce.png",
-    imageWidth: "1734",
-    imageHeight: "907",
+    image: "/og-eduardo-dulce-v2.jpg",
+    imageWidth: "1200",
+    imageHeight: "628",
     imageAlt: "Invitación de boda de Eduardo y Dulce, 28 de noviembre de 2026",
   },
 };
@@ -40,7 +40,7 @@ export default async function eventSocialPreview(request, context) {
     <meta property="og:url" content="${escapeAttribute(url.href)}" />
     <meta property="og:image" content="${escapeAttribute(imageUrl)}" />
     <meta property="og:image:secure_url" content="${escapeAttribute(imageUrl)}" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="${preview.imageWidth}" />
     <meta property="og:image:height" content="${preview.imageHeight}" />
     <meta property="og:image:alt" content="${imageAlt}" />

@@ -8,11 +8,12 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { createInvitationShareUrl } from "../../utils/invitationUrl";
 
 export default function PersonalizedPass({ guest, event, compact = false }) {
   const [copied, setCopied] = useState(false);
   const tableNumber = guest.table_name?.replace(/^mesa\s*/i, "").trim();
-  const url = `${window.location.origin}/evento/${event.slug}/${guest.code}`;
+  const url = createInvitationShareUrl(event, guest, window.location.origin);
   async function copy() {
     await navigator.clipboard.writeText(url);
     setCopied(true);

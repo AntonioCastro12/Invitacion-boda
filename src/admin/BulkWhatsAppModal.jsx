@@ -1,6 +1,7 @@
 import { AlertCircle, CheckCircle2, MessageCircle, SkipForward, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { createWhatsAppUrl, invitationMessage } from "../utils/whatsapp";
+import { createInvitationShareUrl } from "../utils/invitationUrl";
 
 export default function BulkWhatsAppModal({ event, guests, onClose }) {
   const baseUrl = (import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
@@ -13,7 +14,7 @@ export default function BulkWhatsAppModal({ event, guests, onClose }) {
 
   function openCurrent() {
     if (!current) return;
-    const invitationUrl = `${baseUrl}/evento/${event.slug}/${current.code}`;
+    const invitationUrl = createInvitationShareUrl(event, current, baseUrl);
     const whatsappUrl = createWhatsAppUrl(current.phone, invitationMessage(event, current, invitationUrl));
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     setSent((currentSent) => [...currentSent, current.id]);

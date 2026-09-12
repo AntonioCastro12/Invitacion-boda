@@ -1,5 +1,6 @@
 import { Copy, Edit3, ExternalLink, MessageCircle, Trash2 } from "lucide-react";
 import { createWhatsAppUrl, invitationMessage } from "../utils/whatsapp";
+import { createInvitationShareUrl } from "../utils/invitationUrl";
 
 export default function GuestTable({ event, guests, onEdit, onDelete, onCopy }) {
   const baseUrl = (import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
@@ -10,7 +11,7 @@ export default function GuestTable({ event, guests, onEdit, onDelete, onCopy }) 
       <table className="guest-table">
         <thead><tr><th>Familia / Invitado</th><th>Teléfono</th><th>Pases</th><th>Código</th><th>Enlace</th><th>Acciones</th></tr></thead>
         <tbody>{guests.map((guest) => {
-          const url = `${baseUrl}/evento/${event.slug}/${guest.code}`;
+          const url = createInvitationShareUrl(event, guest, baseUrl);
           const whatsapp = createWhatsAppUrl(guest.phone, invitationMessage(event, guest, url));
           return (
             <tr key={guest.id}>
