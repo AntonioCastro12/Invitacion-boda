@@ -43,7 +43,7 @@ Deno.serve(async (request) => {
     const page = Math.max(0, Math.floor(Number(body.page) || 0));
     const pageSize = 40;
     const start = page * pageSize;
-    const { data: photoRows, error } = await admin.from("album_photos").select("id,uploader_name,storage_path,mime_type,created_at").eq("event_id", event.id).eq("status", "visible").order("created_at", { ascending: false }).range(start, start + pageSize);
+    const { data: photoRows, error } = await admin.from("album_photos").select("id,guest_id,uploader_name,storage_path,mime_type,created_at").eq("event_id", event.id).eq("status", "visible").order("created_at", { ascending: false }).range(start, start + pageSize);
     if (error) throw error;
     const hasMore = (photoRows?.length || 0) > pageSize;
     const photos = (photoRows || []).slice(0, pageSize);

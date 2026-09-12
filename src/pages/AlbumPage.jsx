@@ -10,7 +10,7 @@ function FeedPhoto({ photo, onDelete }) {
   useEffect(() => () => { if (localUrl) URL.revokeObjectURL(localUrl); }, [localUrl]);
   const source = localUrl || photo.url;
   const isVideo = isVideoMedia(photo);
-  return <article className="album-feed-card"><header><span className="album-feed-avatar">{photo.author.slice(0, 1).toUpperCase()}</span><div><strong>{photo.author}</strong><time dateTime={photo.createdAt}>{new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short" }).format(new Date(photo.createdAt))}</time></div>{photo.local && <button type="button" onClick={() => onDelete(photo)} aria-label="Eliminar recuerdo local"><Trash2 size={17} /></button>}</header>{isVideo ? <video src={source} controls playsInline preload="metadata" aria-label={`Video compartido por ${photo.author}`} /> : <img src={source} alt={`Recuerdo compartido por ${photo.author}`} loading="lazy" decoding="async" />}<footer><button className={liked ? "is-liked" : ""} type="button" onClick={() => setLiked(!liked)} aria-label={liked ? "Quitar Me gusta" : "Me gusta"}><Heart size={23} fill={liked ? "currentColor" : "none"} /></button><span>{liked ? "Te gusta este recuerdo" : "Un recuerdo de nuestra celebración"}</span></footer></article>;
+  return <article className="album-feed-card"><header><span className="album-feed-avatar">{photo.author.slice(0, 1).toUpperCase()}</span><div><strong>{photo.author}</strong><time dateTime={photo.createdAt}>{new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short" }).format(new Date(photo.createdAt))}</time></div>{(photo.local || photo.owner) && <button type="button" onClick={() => onDelete(photo)} aria-label="Eliminar recuerdo"><Trash2 size={17} /></button>}</header>{isVideo ? <video src={source} controls playsInline preload="metadata" aria-label={`Video compartido por ${photo.author}`} /> : <img src={source} alt={`Recuerdo compartido por ${photo.author}`} loading="lazy" decoding="async" />}<footer><button className={liked ? "is-liked" : ""} type="button" onClick={() => setLiked(!liked)} aria-label={liked ? "Quitar Me gusta" : "Me gusta"}><Heart size={23} fill={liked ? "currentColor" : "none"} /></button><span>{liked ? "Te gusta este recuerdo" : "Un recuerdo de nuestra celebración"}</span></footer></article>;
 }
 
 export default function AlbumPage() {
@@ -41,8 +41,8 @@ export default function AlbumPage() {
   }
 
   async function remove(photo) {
-    if (!window.confirm("¿Eliminar este recuerdo del dispositivo?")) return;
-    try { await removeAlbumPhoto(photo); await refresh(); setNotice("Recuerdo local eliminado."); }
+    if (!window.confirm(photo.local ? "¿Eliminar este recuerdo del dispositivo?" : "¿Eliminar este recuerdo del álbum compartido? No se podrá recuperar.")) return;
+    try { await removeAlbumPhoto(invitation.event, invitation.guest, photo); await refresh(); setNotice(photo.local ? "Recuerdo local eliminado." : "Recuerdo eliminado del álbum compartido."); }
     catch (reason) { setNotice(reason.message); }
   }
 

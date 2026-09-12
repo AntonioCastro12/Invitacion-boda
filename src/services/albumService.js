@@ -44,6 +44,7 @@ export async function listAlbumPhotos(event, guest, page = 0) {
       author: photo.uploader_name,
       createdAt: photo.created_at,
       mimeType: photo.mime_type,
+      owner: photo.guest_id === guest.id,
       shared: true,
     }),
   );
@@ -94,6 +95,15 @@ export async function hideOwnerAlbumPhoto(photo) {
   if (error) throw error;
 }
 
+export async function removeOwnerAlbumPhoto(event, photo) {
+  if (photo.local) return deleteLocalPhoto(photo.id);
+  const { error } = await requireSupabase().rpc("delete_album_photo", {
+    p_event_slug: event.slug,
+    p_photo_id: photo.id,
+  });
+  if (error) throw error;
+}
+
 export async function uploadAlbumPhotos(event, guest, files) {
   const media = Array.from(files);
   if (!isSupabaseConfigured) {
@@ -137,12 +147,14 @@ export async function uploadAlbumPhotos(event, guest, files) {
   }
 }
 
-export async function removeAlbumPhoto(photo) {
-  if (!photo.local)
-    throw new Error(
-      "Los recuerdos compartidos serán moderados desde el panel de los anfitriones.",
-    );
-  await deleteLocalPhoto(photo.id);
+export async function removeAlbumPhoto(event, guest, photo) {
+  if (photo.local) return deleteLocalPhoto(photo.id);
+  const { error } = await requireSupabase().rpc("delete_album_photo", {
+    p_event_slug: event.slug,
+    p_photo_id: photo.id,
+    p_guest_code: guest.code,
+  });
+  if (error) throw error;
 }
 
 export { isSupabaseConfigured as isSharedAlbumEnabled };

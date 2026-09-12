@@ -372,14 +372,20 @@
   background: #f8ecd4;
 }
 
-.theme-dulce-eduardo .family-honors__grid article {
+.theme-dulce-eduardo .family-honors__family-card,
+.theme-dulce-eduardo .family-honors__godparents {
   border-color: rgba(132, 116, 0, 0.32);
   background: rgba(255, 253, 247, 0.88);
 }
 
-.theme-dulce-eduardo .family-honors__grid span {
+.theme-dulce-eduardo .family-honors__family-card header span,
+.theme-dulce-eduardo .family-honors__godparents header span,
+.theme-dulce-eduardo .family-honors__person small {
   color: var(--wedding-orange);
 }
+
+.theme-dulce-eduardo .family-honors__gender--man,
+.theme-dulce-eduardo .family-honors__gender--woman { color: #19160e; }
 
 .theme-dulce-eduardo .story-carousel__viewport {
   box-shadow: 0 22px 52px rgba(102, 20, 0, 0.2);

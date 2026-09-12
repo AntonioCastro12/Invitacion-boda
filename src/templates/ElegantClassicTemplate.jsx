@@ -98,11 +98,6 @@ export default function ElegantClassicTemplate({ event, guest }) {
         aria-hidden={!opened}
       >
         <Hero event={event} opened={opened} />
-        {config.family_honors && (
-          <SectionReveal>
-            <FamilyHonors config={config} />
-          </SectionReveal>
-        )}
         {features.countdown && (
           <SectionReveal>
             <Countdown event={event} />
@@ -111,6 +106,11 @@ export default function ElegantClassicTemplate({ event, guest }) {
         {gallery.length > 0 && (
           <SectionReveal>
             <StoryGallery photos={gallery} />
+          </SectionReveal>
+        )}
+        {config.family_honors && (
+          <SectionReveal>
+            <FamilyHonors config={config} />
           </SectionReveal>
         )}
         {features.embedded_video && config.video_enabled !== false && (
