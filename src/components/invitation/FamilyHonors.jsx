@@ -51,18 +51,18 @@ export default function FamilyHonors({ config = {} }) {
       </motion.div>
       <motion.p className="section-intro" initial={reduceMotion ? false : { opacity: 0, letterSpacing: ".4em" }} whileInView={reduceMotion ? undefined : { opacity: 1, letterSpacing: ".14em" }} viewport={{ once: true }} transition={{ duration: 1.1 }}>CON LA BENDICIÓN DE NUESTRAS FAMILIAS</motion.p>
       <motion.h2 id="family-honors-title" initial={reduceMotion ? false : { opacity: 0, y: 24 }} whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .85, delay: .12 }}>Nuestras raíces</motion.h2>
-      <motion.p className="family-honors__lead" initial={reduceMotion ? false : { opacity: 0, y: 18 }} whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .8, delay: .24 }}>Con amor y gratitud, honramos a quienes nos dieron la vida y hoy bendicen nuestro camino.</motion.p>
+      <motion.p className="family-honors__lead" initisal={reduceMotion ? false : { opacity: 0, y: 18 }} whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .8, delay: .24 }}>Con amor y gratitud, honramos a quienes nos dieron la vida y hoy bendicen nuestro camino.</motion.p>
       <div className="family-honors__families">
         {groomParents.length > 0 && <motion.article className="family-honors__family-card" initial={reduceMotion ? false : { opacity: 0, x: -52, rotate: -1.5 }} whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, rotate: 0 }} viewport={{ once: true, amount: .2 }} transition={{ duration: .9, type: "spring", bounce: .14 }}>
-          <header><span>Familia del novio</span><h3>Padres de Eduardo</h3></header>
+          <header><span></span><h3>Familia del novio</h3></header>
           <div>
             {groomParents[0] && <HonorName name={groomParents[0]} role="Padre" reduceMotion={reduceMotion} delay={.12} />}
             {groomParents[1] && <HonorName name={groomParents[1]} role="Madre" feminine reduceMotion={reduceMotion} delay={.27} />}
           </div>
         </motion.article>}
-        <motion.div className="family-honors__union" aria-hidden="true" animate={reduceMotion ? undefined : { scale: [1, 1.12, 1] }} transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: "easeInOut" }}><i /><HeartHandshake /><i /></motion.div>
+        <motion.div className="family-honors__sunion" aria-hidden="true" animate={reduceMotion ? undefined : { scale: [1, 1.12, 1] }} transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: "easeInOut" }}><i /><HeartHandshake /><i /></motion.div>
         {brideParents.length > 0 && <motion.article className="family-honors__family-card" initial={reduceMotion ? false : { opacity: 0, x: 52, rotate: 1.5 }} whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, rotate: 0 }} viewport={{ once: true, amount: .2 }} transition={{ duration: .9, type: "spring", bounce: .14 }}>
-          <header><span>Familia de la novia</span><h3>Padres de Dulce</h3></header>
+          <header><span></span><h3>Familia de la novia</h3></header>
           <div>
             {brideParents[0] && <HonorName name={brideParents[0]} role="Padre" reduceMotion={reduceMotion} delay={.12} />}
             {brideParents[1] && <HonorName name={brideParents[1]} role="Madre" feminine reduceMotion={reduceMotion} delay={.27} />}
