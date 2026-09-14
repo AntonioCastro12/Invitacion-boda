@@ -6,7 +6,7 @@ const icons = {
   godparents: "/images/honors-couple.jpg",
 };
 
-function HonorGroup({ icon, eyebrow, title, names, delay, reduceMotion }) {
+function HonorGroup({ icon, kind, eyebrow, title, names, delay, reduceMotion }) {
   if (!names.length) return null;
 
   return (
@@ -17,7 +17,7 @@ function HonorGroup({ icon, eyebrow, title, names, delay, reduceMotion }) {
       viewport={{ once: true, amount: 0.35 }}
       transition={{ duration: 0.85, delay, ease: [0.22, 1, 0.36, 1] }}
     >
-      <span className="family-honors__icon" aria-hidden="true">
+      <span className={`family-honors__icon family-honors__icon--${kind}`} aria-hidden="true">
         <img src={icon} alt="" loading="lazy" decoding="async" />
       </span>
       {eyebrow && <p>{eyebrow}</p>}
@@ -56,16 +56,16 @@ export default function FamilyHonors({ config = {} }) {
         viewport={{ once: true }}
         transition={{ duration: 0.9 }}
       >
-        <img src="/images/honors-bouquet.jpg" alt="" aria-hidden="true" />
+        <span className="family-honors__bouquet" aria-hidden="true"><img src="/images/honors-bouquet.jpg" alt="" /></span>
         <p className="section-intro">CON LA BENDICIÓN DE NUESTRAS FAMILIAS</p>
         <h2 id="family-honors-title">Nuestras raíces</h2>
         <span>Con amor y gratitud, honramos a quienes nos acompañan y bendicen nuestro camino.</span>
       </motion.header>
 
       <div className="family-honors__list">
-        <HonorGroup icon={icons.groom} title="Padres del novio" names={groomParents} delay={0.08} reduceMotion={reduceMotion} />
-        <HonorGroup icon={icons.bride} title="Padres de la novia" names={brideParents} delay={0.16} reduceMotion={reduceMotion} />
-        <HonorGroup icon={icons.godparents} eyebrow="Nuestro vínculo espiritual" title="Padrinos de velación" names={godparents} delay={0.24} reduceMotion={reduceMotion} />
+        <HonorGroup icon={icons.groom} kind="groom" title="Padres del novio" names={groomParents} delay={0.08} reduceMotion={reduceMotion} />
+        <HonorGroup icon={icons.bride} kind="bride" title="Padres de la novia" names={brideParents} delay={0.16} reduceMotion={reduceMotion} />
+        <HonorGroup icon={icons.godparents} kind="godparents" eyebrow="Nuestro vínculo espiritual" title="Padrinos de velación" names={godparents} delay={0.24} reduceMotion={reduceMotion} />
       </div>
 
       <motion.footer
@@ -77,7 +77,7 @@ export default function FamilyHonors({ config = {} }) {
         aria-hidden="true"
       >
         <i />
-        <img src="/images/honors-bouquet.jpg" alt="" loading="lazy" decoding="async" />
+        <span className="family-honors__bouquet" aria-hidden="true"><img src="/images/honors-bouquet.jpg" alt="" loading="lazy" decoding="async" /></span>
         <i />
       </motion.footer>
     </section>

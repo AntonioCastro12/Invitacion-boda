@@ -167,17 +167,17 @@
 .family-honors::before { top: -175px; left: -90px; }
 .family-honors::after { right: -100px; bottom: -190px; }
 .family-honors__heading { display: grid; width: min(100%,430px); justify-items: center; margin: 0 auto 2.9rem; }
-.family-honors__heading > img { width: 68px; height: 68px; margin-bottom: 1.1rem; object-fit: cover; border: 1px solid color-mix(in srgb,var(--gold) 20%,transparent); border-radius: 50%; mix-blend-mode: multiply; opacity: .7; clip-path: circle(49%); }
+.family-honors__heading > .family-honors__bouquet { width: 68px; height: 68px; margin-bottom: 1.1rem; }
 .family-honors__heading .section-intro { margin-bottom: .75rem; color: var(--gold); }
 .family-honors__heading h2 { margin: 0 0 .75rem; color: var(--ink); font-family: "Cormorant Garamond",serif; font-size: clamp(2.25rem,10vw,3.25rem); font-weight: 500; }
 .family-honors__heading > span { max-width: 360px; color: var(--muted); font-family: "Cormorant Garamond",serif; font-size: 1.08rem; font-style: italic; line-height: 1.5; }
 .family-honors__list { display: grid; width: min(100%,430px); gap: 0; margin: 0 auto; }
 .family-honors__group { position: relative; display: grid; justify-items: center; padding: 0 1rem 3.9rem; }
 .family-honors__group:not(:last-child)::after { position: absolute; bottom: 1.45rem; width: 72px; height: 1px; content: ""; background: linear-gradient(90deg,transparent,var(--gold),transparent); opacity: .58; }
-.family-honors__icon { display: grid; width: 78px; height: 78px; margin-bottom: .85rem; overflow: hidden; place-items: center; border: 1px solid color-mix(in srgb,var(--gold) 30%,transparent); border-radius: 50%; background: rgba(255,255,255,.52); box-shadow: 0 12px 28px rgba(45,61,51,.08), inset 0 0 0 5px rgba(255,255,255,.45); }
-.family-honors__icon img { width: 66px; height: 66px; object-fit: cover; mix-blend-mode: multiply; opacity: .78; }
-.family-honors__group:nth-child(2) .family-honors__icon img { width: 62px; height: 62px; }
-.family-honors__group:nth-child(3) .family-honors__icon img { width: 70px; height: 70px; }
+.family-honors__icon { display: grid; width: 82px; height: 82px; margin-bottom: .85rem; place-items: center; }
+.family-honors__icon img { width: 76px; height: 76px; object-fit: cover; mix-blend-mode: multiply; filter: grayscale(1) contrast(2.7); opacity: .76; }
+.family-honors__group:nth-child(2) .family-honors__icon img { width: 72px; height: 72px; }
+.family-honors__group:nth-child(3) .family-honors__icon img { width: 80px; height: 80px; }
 .family-honors__group > p { margin: 0 0 .32rem; color: var(--gold); font-size: .57rem; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; }
 .family-honors__group h3 { margin: 0 0 .75rem; color: var(--olive); font-family: "Cormorant Garamond",serif; font-size: clamp(1.45rem,7vw,1.9rem); font-weight: 600; letter-spacing: .035em; text-transform: uppercase; }
 .family-honors__names { display: grid; gap: .18rem; }
@@ -185,7 +185,9 @@
 .family-honors__footer { display: flex; align-items: center; justify-content: center; gap: .75rem; margin-top: -.3rem; }
 .family-honors__footer i { width: clamp(38px,14vw,76px); height: 1px; background: linear-gradient(90deg,transparent,var(--gold)); }
 .family-honors__footer i:last-child { background: linear-gradient(90deg,var(--gold),transparent); }
-.family-honors__footer img { width: 54px; height: 54px; object-fit: cover; border-radius: 50%; mix-blend-mode: multiply; opacity: .62; clip-path: circle(49%); }
+.family-honors__footer .family-honors__bouquet { width: 54px; height: 54px; }
+.family-honors__bouquet { display: block; background: transparent; }
+.family-honors__bouquet img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; filter: grayscale(1) contrast(2.7); opacity: .68; }
 @media (max-width:360px) { .family-honors { padding-inline: 1rem; } .family-honors__group { padding-inline: .35rem; } .family-honors__names strong { font-size: 1.3rem; } }
 .confirmation-help { margin: .2rem 0 -.25rem; color: var(--muted); font-size: .8rem; text-align: center; }
 .confirmation-actions { display: grid; gap: .7rem; }
