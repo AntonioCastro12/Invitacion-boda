@@ -101,6 +101,7 @@
 .package-explanation strong { color: var(--ink); }
 .page-header__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .65rem; }
 .bulk-send-modal { width: min(100%, 650px); }
+.modal-backdrop--top { align-items: start; padding-top: 1.5rem; }
 .bulk-send-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; margin: 1rem 0 .25rem; padding: .3rem; border: 1px solid var(--line); border-radius: 12px; background: #f6f7f5; }
 .bulk-send-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 38px; padding: .45rem .75rem; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: 600 .74rem "Montserrat", sans-serif; cursor: pointer; transition: background .2s ease, color .2s ease; }
 .bulk-send-tabs button.active { background: #fff; color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, .06); }
@@ -877,6 +878,15 @@
   .modal-backdrop {
     align-items: end;
     padding: 0;
+  }
+
+  .modal-backdrop.modal-backdrop--top {
+    align-items: start;
+    padding: 0;
+  }
+
+  .modal-backdrop--top .modal {
+    border-radius: 0 0 22px 22px;
   }
 
   .modal {

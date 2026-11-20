@@ -67,7 +67,7 @@ export default function BulkWhatsAppModal({
   }
 
   return (
-    <div className="modal-backdrop" role="presentation" onMouseDown={(eventMouse) => { if (eventMouse.target === eventMouse.currentTarget) onClose(); }}>
+    <div className="modal-backdrop modal-backdrop--top" role="presentation" onMouseDown={(eventMouse) => { if (eventMouse.target === eventMouse.currentTarget) onClose(); }}>
       <section className="modal bulk-send-modal" role="dialog" aria-modal="true" aria-labelledby="bulk-send-title">
         <header>
           <div>
