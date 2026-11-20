@@ -409,3 +409,28 @@ test("aplica la paleta de boda únicamente a Dulce y Eduardo", async () => {
   assert.match(seed, /"admin_panel":true/);
   assert.match(seed, /insert into public\.event_entitlements/);
 });
+
+test("permite enviar recordatorios por WhatsApp a todos o por estado de confirmación", async () => {
+  const [guestsPage, bulkModal, whatsappUtils] = await Promise.all([
+    read("src/pages/GuestsPage.jsx"),
+    read("src/admin/BulkWhatsAppModal.jsx"),
+    import("../src/utils/whatsapp.js")
+  ]);
+  assert.match(guestsPage, /Enviar recordatorio/);
+  assert.match(guestsPage, /rsvpStatusByGuest/);
+  assert.match(bulkModal, /reminderMessage/);
+  assert.match(bulkModal, /Enviar recordatorio a todos/);
+  assert.match(bulkModal, /AUDIENCE_OPTIONS/);
+  const text = whatsappUtils.reminderMessage(
+    { name: "Eduardo y Dulce", event_type: "Boda", event_date: "2026-11-28", ceremony_name: "Templo Hospitalito" },
+    { name: "Familia Pérez", passes: 3 },
+    "https://rcm-invitaciones.netlify.app/evento/dulce-eduardo/ABC12",
+    "Recuerden llegar 15 minutos antes."
+  );
+  assert.match(text, /Familia Pérez/);
+  assert.match(text, /28 de noviembre de 2026/);
+  assert.match(text, /Templo Hospitalito/);
+  assert.match(text, /3 lugares reservados/);
+  assert.match(text, /Recuerden llegar 15 minutos antes\./);
+  assert.match(text, /https:\/\/rcm-invitaciones\.netlify\.app\/evento\/dulce-eduardo\/ABC12/);
+});

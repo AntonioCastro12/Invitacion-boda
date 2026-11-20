@@ -1,4 +1,4 @@
-import { MessageCircle, Plus, Search } from "lucide-react";
+import { Bell, MessageCircle, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import GuestForm from "../admin/GuestForm";
@@ -11,18 +11,30 @@ import {
   listGuests,
   updateGuest,
 } from "../services/guestService";
+import { listRsvps } from "../services/rsvpService";
 
 export default function GuestsPage() {
   const { event, loading: eventLoading } = useEvent();
   const [guests, setGuests] = useState([]);
+  const [rsvpStatusByGuest, setRsvpStatusByGuest] = useState({});
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState(undefined);
   const [formOpen, setFormOpen] = useState(false);
-  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkMode, setBulkMode] = useState(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
   const load = useCallback(async () => {
-    if (event) setGuests(await listGuests(event.id));
+    if (!event) return;
+    const loadedGuests = await listGuests(event.id);
+    setGuests(loadedGuests);
+    try {
+      const rsvps = await listRsvps(event.id, loadedGuests);
+      setRsvpStatusByGuest(
+        Object.fromEntries(rsvps.map((row) => [row.guest.id, row.status])),
+      );
+    } catch {
+      setRsvpStatusByGuest({});
+    }
   }, [event]);
   useEffect(() => {
     load().catch((e) => setNotice(e.message));
@@ -101,7 +113,15 @@ export default function GuestsPage() {
           <button
             className="button button--light"
             type="button"
-            onClick={() => setBulkOpen(true)}
+            onClick={() => setBulkMode("reminder")}
+            disabled={!guests.length}
+          >
+            <Bell size={18} /> Enviar recordatorio
+          </button>
+          <button
+            className="button button--light"
+            type="button"
+            onClick={() => setBulkMode("invitation")}
             disabled={!guests.length}
           >
             <MessageCircle size={18} /> Enviar a todos
@@ -154,11 +174,13 @@ export default function GuestsPage() {
           saving={saving}
         />
       )}
-      {bulkOpen && (
+      {bulkMode && (
         <BulkWhatsAppModal
           event={event}
           guests={guests}
-          onClose={() => setBulkOpen(false)}
+          initialMode={bulkMode}
+          rsvpStatusByGuest={rsvpStatusByGuest}
+          onClose={() => setBulkMode(null)}
         />
       )}
     </section>

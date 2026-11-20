@@ -101,6 +101,16 @@
 .package-explanation strong { color: var(--ink); }
 .page-header__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .65rem; }
 .bulk-send-modal { width: min(100%, 650px); }
+.bulk-send-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; margin: 1rem 0 .25rem; padding: .3rem; border: 1px solid var(--line); border-radius: 12px; background: #f6f7f5; }
+.bulk-send-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 38px; padding: .45rem .75rem; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: 600 .74rem "Montserrat", sans-serif; cursor: pointer; transition: background .2s ease, color .2s ease; }
+.bulk-send-tabs button.active { background: #fff; color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, .06); }
+.bulk-send-reminder-controls { display: grid; gap: .8rem; margin-top: .9rem; }
+.bulk-send-filters { display: flex; flex-wrap: wrap; gap: .45rem; }
+.bulk-send-filters button { padding: .4rem .8rem; border: 1px solid var(--line); border-radius: 99px; background: #fff; color: var(--muted); font: 600 .7rem "Montserrat", sans-serif; cursor: pointer; }
+.bulk-send-filters button.active { border-color: var(--olive); background: var(--olive); color: #fff; }
+.bulk-send-custom { display: grid; gap: .35rem; }
+.bulk-send-custom span { color: var(--muted); font-size: .7rem; font-weight: 600; }
+.bulk-send-custom textarea { width: 100%; padding: .65rem .8rem; border: 1px solid var(--line); border-radius: 10px; font: 400 .76rem/1.5 "Montserrat", sans-serif; color: var(--ink); resize: vertical; background: #fff; }
 .bulk-send-note { display: grid; grid-template-columns: auto 1fr; gap: .8rem; margin: 1.25rem 0; padding: 1rem; border-radius: 12px; background: #fff8e9; color: #6f633f; }
 .bulk-send-note svg { margin-top: .15rem; color: var(--gold); }
 .bulk-send-note p { margin: 0; font-size: .76rem; line-height: 1.65; }
